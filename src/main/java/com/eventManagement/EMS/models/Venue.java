@@ -18,14 +18,18 @@ public class Venue {
     @OneToMany(mappedBy = "venue", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Event> events;
 
-    @ManyToOne
-    @JoinColumn(name = "venue_manager_id")
-    private User venueManager;
+    @ManyToMany
+    @JoinTable(
+            name = "venue_managers",
+            joinColumns = @JoinColumn(name = "venue_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private List<User> venueManager;
 
 
     public Venue() {}
 
-    public Venue(Long id, String name, String location, List<Event> events, User venueManager) {
+    public Venue(Long id, String name, String location, List<Event> events, List<User> venueManager) {
         this.id = id;
         this.name = name;
         this.location = location;
@@ -65,11 +69,11 @@ public class Venue {
         this.events = events;
     }
 
-    public User getVenueManager() {
+    public List<User> getVenueManager() {
         return venueManager;
     }
 
-    public void setVenueManager(User venueManager) {
+    public void setVenueManager(List<User> venueManager) {
         this.venueManager = venueManager;
     }
 }

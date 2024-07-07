@@ -18,6 +18,9 @@ public class UserInfoDetails implements UserDetails {
        this.user = user;
     }
 
+    public User getUser() {
+        return user;
+    }
     public Long getId(){
         return user.getUserID();
     }
@@ -28,14 +31,17 @@ public class UserInfoDetails implements UserDetails {
         return List.of(new SimpleGrantedAuthority(user.getRole()));
     }
 
-
-
     public String getPassword(){
         return user.getPassword();
     }
 
     public String getUsername(){
         return user.getUsername();
+    }
+
+
+    public String getRole(){
+        return user.getRole();
     }
 
     @Override

@@ -52,7 +52,7 @@ public class User {
     @OneToMany(mappedBy = "organizer", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Event> organizedEvents;
 
-    @OneToMany(mappedBy = "venueManager", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToMany(mappedBy = "venueManager")
     private List<Venue> managedVenues;
 
 

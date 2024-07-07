@@ -2,6 +2,8 @@ package com.eventManagement.EMS.models;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+
 
 @Entity
 public class Event {
@@ -15,9 +17,10 @@ public class Event {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    private String date;
 
-    private String time;
+    public LocalDateTime startTime;
+
+    public LocalDateTime endTime;
 
     @ManyToOne
     @JoinColumn(name = "venue_id")
@@ -36,25 +39,17 @@ public class Event {
     public Event() {
     }
 
-    public Event(Long id, String title, String description, String date, String time, Venue venue, User organizer, String status, String createdAt, String updatedAt) {
+    public Event(Long id, String title, String description, LocalDateTime startTime, LocalDateTime endTime, Venue venue, User organizer, String status, String createdAt, String updatedAt) {
         this.id = id;
         this.title = title;
         this.description = description;
-        this.date = date;
-        this.time = time;
+        this.startTime = startTime;
+        this.endTime = endTime;
         this.venue = venue;
         this.organizer = organizer;
         this.status = status;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
-    }
-
-    public Long getEventID() {
-        return id;
-    }
-
-    public void setEventID(Long eventID) {
-        this.id = eventID;
     }
 
     public String getTitle() {
@@ -71,22 +66,6 @@ public class Event {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public String getDate() {
-        return date;
-    }
-
-    public void setDate(String date) {
-        this.date = date;
-    }
-
-    public String getTime() {
-        return time;
-    }
-
-    public void setTime(String time) {
-        this.time = time;
     }
 
     public Venue getVenue() {
@@ -127,5 +106,25 @@ public class Event {
 
     public void setUpdatedAt(String updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public LocalDateTime getEndTime() {
+        return endTime;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
     }
 }

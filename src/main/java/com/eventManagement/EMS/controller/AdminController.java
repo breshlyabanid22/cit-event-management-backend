@@ -6,7 +6,6 @@ import com.eventManagement.EMS.repository.UserRepository;
 import com.eventManagement.EMS.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,11 +19,11 @@ public class AdminController {
     @Autowired
     UserService userService;
 
-
     @GetMapping("/allUsers")
     public ResponseEntity<List<User>> getAllUsers(){
         return userService.getAllUsers();
     }
+
 
     @PutMapping("/update/{id}")
     public ResponseEntity<String> update(@PathVariable Long id, @RequestBody User updatedUser) {
