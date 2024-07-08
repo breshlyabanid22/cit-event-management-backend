@@ -12,15 +12,17 @@ public class Event {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String title;
+    private String name;
 
     @Column(columnDefinition = "TEXT")
     private String description;
 
 
-    public LocalDateTime startTime;
+    private LocalDateTime startTime;
 
-    public LocalDateTime endTime;
+    private LocalDateTime endTime;
+
+    private int capacity;
 
     @ManyToOne
     @JoinColumn(name = "venue_id")
@@ -39,25 +41,26 @@ public class Event {
     public Event() {
     }
 
-    public Event(Long id, String title, String description, LocalDateTime startTime, LocalDateTime endTime, Venue venue, User organizer, String status, String createdAt, String updatedAt) {
+    public Event(Long id, String name, String description, LocalDateTime startTime, LocalDateTime endTime, Venue venue, int capacity, User organizer, String status, String createdAt, String updatedAt) {
         this.id = id;
-        this.title = title;
+        this.name = name;
         this.description = description;
         this.startTime = startTime;
         this.endTime = endTime;
         this.venue = venue;
+        this.capacity = capacity;
         this.organizer = organizer;
         this.status = status;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
 
-    public String getTitle() {
-        return title;
+    public String getName() {
+        return name;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getDescription() {
@@ -126,5 +129,13 @@ public class Event {
 
     public void setEndTime(LocalDateTime endTime) {
         this.endTime = endTime;
+    }
+
+    public int getCapacity() {
+        return capacity;
+    }
+
+    public void setCapacity(int capacity) {
+        this.capacity = capacity;
     }
 }

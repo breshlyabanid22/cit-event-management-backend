@@ -1,25 +1,21 @@
 package com.eventManagement.EMS.service;
 
-import com.eventManagement.EMS.config.UserInfoDetails;
 import com.eventManagement.EMS.models.Event;
 import com.eventManagement.EMS.models.User;
-import com.eventManagement.EMS.models.Venue;
 import com.eventManagement.EMS.repository.EventRepository;
-import com.eventManagement.EMS.repository.VenueRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class EventService {
 
     @Autowired
     EventRepository eventRepository;
-    @Autowired
-    VenueRepository venueRepository;
 
     public ResponseEntity<String> createEvent(Event event, User user){
         List<Event> conflictingEvents = eventRepository.findByVenueAndTimeRange(
@@ -29,7 +25,7 @@ public class EventService {
         );
 
         if(!conflictingEvents.isEmpty()){
-            return new ResponseEntity<>("The venue is already reserved for the specified time range", HttpStatus.CONFLICT);
+            return new ResponseEntity<>("The venue is already reserved for the specified date", HttpStatus.CONFLICT);
         }
 
         event.setOrganizer(user);
@@ -53,5 +49,70 @@ public class EventService {
         List<Event> events = eventRepository.findAll();
         return new ResponseEntity<>(events, HttpStatus.OK);
     }
+    public ResponseEntity<Event> getEventById(Long eventId){
+        Optional <Event> eventOpt = eventRepository.findById(eventId);
+
+        if(eventOpt.isPresent()){
+            return new ResponseEntity<>(eventOpt.get(), HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    public ResponseEntity<String> updateEvent(Long eventId, Event updatedEvent, User user){
+        Optional<Event> existingEventOpt = eventRepository.findById(eventId);
+
+        if(existingEventOpt.isPresent()){
+            Event existingEvent = existingEventOpt.get();
+
+            //Check if user is admin or organizer
+            if(user.getRole().equals("ADMIN") || existingEvent.getOrganizer().getUserID().equals(user.getUserID())){
+
+                List<Event> conflictingEvents =eventRepository.findByVenueAndTimeRange(
+                        updatedEvent.getVenue(),
+                        updatedEvent.getStartTime(),
+                        updatedEvent.getEndTime()
+                );
+
+                // Exclude the event being updated from conflict checks
+                conflictingEvents.removeIf(event -> event.getId().equals(eventId));
+
+                if(!conflictingEvents.isEmpty()){
+                    return new ResponseEntity<>("The venue is already reserved for the specified date", HttpStatus.CONFLICT);
+                }
+                //update the event details
+                existingEvent.setName(updatedEvent.getName());
+                existingEvent.setDescription(updatedEvent.getDescription());
+                existingEvent.setCapacity(updatedEvent.getCapacity());
+                existingEvent.setVenue(updatedEvent.getVenue());
+                existingEvent.setStartTime(updatedEvent.getStartTime());
+                existingEvent.setEndTime(updatedEvent.getEndTime());
+
+                eventRepository.save(existingEvent);
+                return new ResponseEntity<>("Event updated successfully", HttpStatus.OK);
+            }else{
+                return new ResponseEntity<>("You are not authorized to update this event", HttpStatus.FORBIDDEN);
+            }
+        }else{
+            return new ResponseEntity<>("Event not found", HttpStatus.NOT_FOUND);
+        }
+    }
+
+    public ResponseEntity<String> cancelEvent(Long eventId, User user){
+        Optional<Event> eventOpt = eventRepository.findById(eventId);
+        if(eventOpt.isPresent()){
+            Event event = eventOpt.get();
+
+            //if user is the organizer or admin, allow to delete.
+            if(user.getRole().equals("ADMIN") || event.getOrganizer().getUserID().equals(user.getUserID())){
+                eventRepository.delete(event);
+                return new ResponseEntity<>("Event has been cancelled", HttpStatus.OK);
+            }else{
+                return new ResponseEntity<>("You are not authorized to cancel this event", HttpStatus.FORBIDDEN);
+            }
+        }else{
+            return new ResponseEntity<>("Event not found", HttpStatus.NOT_FOUND);
+        }
+    }
+
 
 }

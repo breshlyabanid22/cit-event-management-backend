@@ -15,6 +15,8 @@ public class Venue {
     private String name;
     private String location;
 
+    private int maxCapacity;
+
     @OneToMany(mappedBy = "venue", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Event> events;
 
@@ -29,10 +31,11 @@ public class Venue {
 
     public Venue() {}
 
-    public Venue(Long id, String name, String location, List<Event> events, List<User> venueManager) {
+    public Venue(Long id, String name, String location, int maxCapacity, List<Event> events, List<User> venueManager) {
         this.id = id;
         this.name = name;
         this.location = location;
+        this.maxCapacity = maxCapacity;
         this.events = events;
         this.venueManager = venueManager;
     }
@@ -59,6 +62,14 @@ public class Venue {
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    public int getMaxCapacity() {
+        return maxCapacity;
+    }
+
+    public void setMaxCapacity(int maxCapacity) {
+        this.maxCapacity = maxCapacity;
     }
 
     public List<Event> getEvents() {
