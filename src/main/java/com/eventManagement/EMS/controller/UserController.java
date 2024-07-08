@@ -18,14 +18,10 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/users")
-@CrossOrigin(origins = "http://localhost:5173")
 public class UserController {
 
     @Autowired
     UserService userService;
-
-    @Autowired
-    UserRepository userRepository;
 
 
     @PostMapping("/register")

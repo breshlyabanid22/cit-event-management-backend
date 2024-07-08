@@ -60,13 +60,13 @@ public class UserService {
             return new ResponseEntity<>("School ID already exists", HttpStatus.CONFLICT);
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-
-        LocalDateTime dateObject = LocalDateTime.now();
-        DateTimeFormatter formatObject = DateTimeFormatter.ofPattern("E, MMM dd yyyy");
-
-        String formattedDate = dateObject.format(formatObject);
-        user.setCreatedAt(formattedDate);
-        userRepository.save(user);
+//
+//        LocalDateTime dateObject = LocalDateTime.now();
+//        DateTimeFormatter formatObject = DateTimeFormatter.ofPattern("E, MMM dd yyyy");
+//
+//        String formattedDate = dateObject.format(formatObject);
+//        user.setCreatedAt(formattedDate);
+//        userRepository.save(user);
         return new ResponseEntity<>("User Registered Successfully", HttpStatus.CREATED);
     }
 

@@ -43,10 +43,10 @@ public class User {
     private String course;
     private String department;
 
-    @Column(name = "created_at", nullable = false)
+    @Column(name = "created_at")
     private String createdAt;
 
-    @Column(name = "updated_at", nullable = false)
+    @Column(name = "updated_at")
     private String updatedAt;
 
     @OneToMany(mappedBy = "organizer", cascade = CascadeType.ALL, orphanRemoval = true)
