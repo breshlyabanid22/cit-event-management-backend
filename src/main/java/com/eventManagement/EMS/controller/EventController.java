@@ -6,15 +6,20 @@ import com.eventManagement.EMS.models.Event;
 import com.eventManagement.EMS.models.User;
 import com.eventManagement.EMS.service.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
-@RestController
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 @RequestMapping("/events")
+@RestController
 public class EventController {
+
+    private static final Logger logger = LoggerFactory.getLogger(EventController.class);
 
     @Autowired
     EventService eventService;
@@ -22,9 +27,14 @@ public class EventController {
 
     @PostMapping("/create") //Create an event
     public ResponseEntity<String> createEvent(@RequestBody Event event, @AuthenticationPrincipal UserInfoDetails userDetails){
+        if (userDetails == null) {
+            logger.warn("User not authenticated");
+            return new ResponseEntity<>("User not authenticated", HttpStatus.UNAUTHORIZED);
+        }
         User user = userDetails.getUser();
         return eventService.createEvent(event, user);
     }
+
 
     @GetMapping("/venue/{venueId}") //Find an event by Venue
     public ResponseEntity<List<Event>> getAllEventsByVenue(

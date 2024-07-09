@@ -4,6 +4,7 @@ import com.eventManagement.EMS.models.User;
 import com.eventManagement.EMS.repository.UserRepository;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cglib.core.Local;
@@ -12,11 +13,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -60,24 +64,32 @@ public class UserService {
             return new ResponseEntity<>("School ID already exists", HttpStatus.CONFLICT);
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-//
-//        LocalDateTime dateObject = LocalDateTime.now();
-//        DateTimeFormatter formatObject = DateTimeFormatter.ofPattern("E, MMM dd yyyy");
-//
-//        String formattedDate = dateObject.format(formatObject);
-//        user.setCreatedAt(formattedDate);
-//        userRepository.save(user);
+
+        LocalDateTime dateObject = LocalDateTime.now();
+        DateTimeFormatter formatObject = DateTimeFormatter.ofPattern("E, MMM dd yyyy");
+
+        String formattedDate = dateObject.format(formatObject);
+        user.setCreatedAt(formattedDate);
+        userRepository.save(user);
         return new ResponseEntity<>("User Registered Successfully", HttpStatus.CREATED);
     }
 
-    public ResponseEntity<String> login(String username, String password, HttpServletRequest request){
+    public ResponseEntity<String> login(String username, String password, HttpServletRequest request) {
         try {
             Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(username, password)
-            );
-            request.getSession(true);
-            return new ResponseEntity<>("Login Successful", HttpStatus.OK);
-        }catch (AuthenticationException e){
+                    new UsernamePasswordAuthenticationToken(username, password));
+
+            if (authentication != null) {
+                // Store authentication in the session
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+                HttpSession session = request.getSession(true); // true to create a new session if it doesn't exist
+                session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, SecurityContextHolder.getContext());
+
+                return new ResponseEntity<>("Login Successful", HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>("Invalid username or password", HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
             return new ResponseEntity<>("Invalid username or password", HttpStatus.UNAUTHORIZED);
         }
     }

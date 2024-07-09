@@ -16,8 +16,9 @@ import org.springframework.security.web.authentication.logout.SecurityContextLog
 import org.springframework.web.bind.annotation.*;
 
 
-@RestController
+
 @RequestMapping("/users")
+@RestController
 public class UserController {
 
     @Autowired

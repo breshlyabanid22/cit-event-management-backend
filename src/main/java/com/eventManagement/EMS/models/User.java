@@ -14,9 +14,6 @@ public class User {
     @Column(name = "user_id")
     private Long userID;
 
-    public Long getUserID() {
-        return userID;
-    }
 
     @Column(unique = true)
     private String username;
@@ -90,7 +87,9 @@ public class User {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
-
+    public Long getUserID() {
+        return userID;
+    }
     public String getUsername() {
         return username;
     }

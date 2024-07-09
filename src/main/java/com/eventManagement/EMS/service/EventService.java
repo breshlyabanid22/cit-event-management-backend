@@ -18,6 +18,11 @@ public class EventService {
     EventRepository eventRepository;
 
     public ResponseEntity<String> createEvent(Event event, User user){
+
+        if(event.getName() == null || event.getStartTime() == null || event.getEndTime() == null || event.getCapacity() <= 0){
+            return new ResponseEntity<>("Invalid event data", HttpStatus.BAD_REQUEST);
+        }
+
         List<Event> conflictingEvents = eventRepository.findByVenueAndTimeRange(
                 event.getVenue(),
                 event.getStartTime(),
