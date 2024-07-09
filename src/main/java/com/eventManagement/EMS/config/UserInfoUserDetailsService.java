@@ -19,8 +19,6 @@ import java.util.List;
 
 @Service
 public class UserInfoUserDetailsService implements UserDetailsService {
-
-    private static final Logger logger = LoggerFactory.getLogger(UserInfoUserDetailsService.class);
     @Autowired
     UserRepository userRepository;
 
@@ -29,19 +27,8 @@ public class UserInfoUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        logger.info("User authenticated: {}", user.getUsername());
         return new UserInfoDetails(user);
     }
 
-//    @Override
-//    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-//        User user = userRepository.findByUsername(username)
-//                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-//        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), getAuthorities(user));
-//    }
-//
-//    private Collection<? extends GrantedAuthority> getAuthorities(User user) {
-//        return List.of(new SimpleGrantedAuthority(user.getRole()));
-//    }
 
 }

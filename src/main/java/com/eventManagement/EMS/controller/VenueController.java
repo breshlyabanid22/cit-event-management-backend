@@ -32,7 +32,7 @@ public class VenueController {
     }
 
     //Gets all venues
-    @GetMapping("/all")
+    @GetMapping("/all")//This can be used when displaying all available venues
     public ResponseEntity<List<Venue>> getAllVenues(){
         return venueService.getAll();
     }
