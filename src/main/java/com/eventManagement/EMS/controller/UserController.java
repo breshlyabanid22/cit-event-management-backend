@@ -58,5 +58,11 @@ public class UserController {
         throw new IllegalArgumentException("Invalid user details");
     }
 
+    @GetMapping("/getUser")
+    public ResponseEntity<User> getCurrentLoginUser(@AuthenticationPrincipal UserInfoDetails userDetails){
+        Long userId = userDetails.getId();
+        return userService.getCurrentUser(userId);
+    }
+
 
 }
