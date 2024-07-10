@@ -28,7 +28,6 @@ public class EventService {
                 event.getStartTime(),
                 event.getEndTime()
         );
-
         if(!conflictingEvents.isEmpty()){
             return new ResponseEntity<>("The venue is already reserved for the specified date", HttpStatus.CONFLICT);
         }
@@ -40,7 +39,7 @@ public class EventService {
 
     public ResponseEntity<List<Event>> getAllEventsByVenue(Long venueId, User user) {
         // Check if user is an organizer or admin
-        if (user.getRole().equals("ORGANIZER") || user.getRole().equals("ADMIN")) {
+        if (user.getRole().equals("VENUE_MANAGER") || user.getRole().equals("ADMIN")) {
             // Check if user is assigned to the venue or is an admin
             if (user.getRole().equals("ADMIN") || user.getManagedVenues().stream().anyMatch(v -> v.getId().equals(venueId))) {
                 List<Event> events = eventRepository.findByVenueId(venueId);

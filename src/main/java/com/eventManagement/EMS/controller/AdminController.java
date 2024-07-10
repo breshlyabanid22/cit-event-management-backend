@@ -25,7 +25,7 @@ public class AdminController {
     }
 
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/update/{id}")//Admin can update user details including roles
     public ResponseEntity<String> update(@PathVariable Long id, @RequestBody User updatedUser) {
         return userService.update(id, updatedUser);
     }

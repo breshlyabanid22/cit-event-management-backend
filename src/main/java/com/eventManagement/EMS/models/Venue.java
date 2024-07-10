@@ -17,17 +17,16 @@ public class Venue {
 
     private int maxCapacity;
 
-    @OneToMany(mappedBy = "venue", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "venue")
     private List<Event> events;
 
-    @ManyToMany
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "venue_managers",
             joinColumns = @JoinColumn(name = "venue_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
     private List<User> venueManager;
-
 
     public Venue() {}
 

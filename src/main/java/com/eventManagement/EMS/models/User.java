@@ -49,7 +49,7 @@ public class User {
     @OneToMany(mappedBy = "organizer", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Event> organizedEvents;
 
-    @ManyToMany(mappedBy = "venueManager")
+    @OneToMany(mappedBy = "venueManager")
     private List<Venue> managedVenues;
 
 
@@ -83,6 +83,7 @@ public class User {
         this.year = year;
         this.course = course;
         this.department = department;
+        this.organizedEvents = organizedEvents;
         this.managedVenues = managedVenues;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;

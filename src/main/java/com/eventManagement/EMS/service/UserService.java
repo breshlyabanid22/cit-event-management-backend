@@ -137,19 +137,30 @@ public class UserService {
             existingUser.setYear(updatedUser.getYear() != null ? updatedUser.getYear() : existingUser.getYear());
             existingUser.setCourse(updatedUser.getCourse() != null ? updatedUser.getCourse() : existingUser.getCourse());
             existingUser.setDepartment(updatedUser.getDepartment() != null ? updatedUser.getDepartment() : existingUser.getDepartment());
+            existingUser.setRole(updatedUser.getRole() != null ? updatedUser.getRole() : existingUser.getRole() );
+            existingUser.setSchoolID(updatedUser.getSchoolID() != null ? updatedUser.getSchoolID() : existingUser.getSchoolID());
+//            existingUser.setManagedVenues(updatedUser.getManagedVenues() != null ? updatedUser.getManagedVenues() : existingUser.getManagedVenues());
 
             if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
                 existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
             }
-            LocalDateTime dateObj = LocalDateTime.now();
-            DateTimeFormatter formatObj = DateTimeFormatter.ofPattern("E, MMM dd yyyy");
 
-            String formattedDate = dateObj.format(formatObj);
-            existingUser.setUpdatedAt(formattedDate);
+            existingUser.setUpdatedAt(LocalDateTime.now().format(DateTimeFormatter.ofPattern("E, MMM dd yyyy")));
             userRepository.save(existingUser);
             return new ResponseEntity<>("User has been updated successfully", HttpStatus.OK);
         } else {
             return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+        }
+    }
+
+    public ResponseEntity<User> getCurrentUser(Long userId){
+        Optional<User> userOptional = userRepository.findById(userId);
+
+        if(userOptional.isPresent()){
+            User user = userOptional.get();
+            return new ResponseEntity<>(user, HttpStatus.OK);
+        }else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -56,5 +57,33 @@ public class EventRegistrationService {
         eventRegistrationRepository.save(registration);
         return new ResponseEntity<>("Registered Successfully. Please wait for approval.", HttpStatus.OK);
     }
+
+    public ResponseEntity<String> cancelRegistration(Long eventId, Long userId){
+        Optional<Event> eventOpt = eventRepository.findById(eventId);
+        Optional<User> userOpt = userRepository.findById(userId);
+
+        Event event = eventOpt.get();
+        User user = userOpt.get();
+
+        //Check if the registration exist
+        Optional<EventRegistration> existingRegistration = eventRegistrationRepository.findByEventAndUser(event, user);
+        if(existingRegistration.isPresent()){
+            EventRegistration eventRegistration = existingRegistration.get();
+            eventRegistration.setStatus("Canceled");
+            return new ResponseEntity<>("Registration has been canceled", HttpStatus.OK);
+        }
+        return new ResponseEntity<>("Registration not found", HttpStatus.NOT_FOUND);
+    }
+
+    //Displays all users that are registered to a specific event
+    public ResponseEntity<List<EventRegistration>> getAllEventRegistrationsByEvent(Long eventId){
+        List<EventRegistration> registrations = eventRegistrationRepository.findByEventId(eventId);
+
+        if(registrations.isEmpty()){
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(registrations, HttpStatus.OK);
+    }
+
 
 }
