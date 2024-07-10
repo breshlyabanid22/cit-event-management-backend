@@ -49,7 +49,7 @@ public class User {
     @OneToMany(mappedBy = "organizer", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Event> organizedEvents;
 
-    @OneToMany(mappedBy = "venueManager")
+    @OneToMany(mappedBy = "venueManagers")
     private List<Venue> managedVenues;
 
 

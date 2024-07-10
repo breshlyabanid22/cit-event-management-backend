@@ -19,7 +19,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             "(e.endTime BETWEEN :startTime AND :endTime) OR " +
             "(e.startTime <= :startTime AND e.endTime >= :endTime))")
     List<Event> findByVenueAndTimeRange(
-            @Param("venue") Venue venue,
+            @Param("venue") Long venue,
             @Param("startTime") LocalDateTime startTime,
             @Param("endTime") LocalDateTime endTime
     );

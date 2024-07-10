@@ -1,6 +1,7 @@
 package com.eventManagement.EMS.controller;
 
 
+import com.eventManagement.EMS.DTO.EventDTO;
 import com.eventManagement.EMS.config.UserInfoDetails;
 import com.eventManagement.EMS.models.Event;
 import com.eventManagement.EMS.models.User;
@@ -25,13 +26,13 @@ public class EventController {
 
 
     @PostMapping("/create") //Create an event
-    public ResponseEntity<String> createEvent(@RequestBody Event event, @AuthenticationPrincipal UserInfoDetails userDetails){
+    public ResponseEntity<String> createEvent(@RequestBody EventDTO eventDTO, @AuthenticationPrincipal UserInfoDetails userDetails){
         if (userDetails == null) {
             logger.warn("User not authenticated");
             return new ResponseEntity<>("User not authenticated", HttpStatus.UNAUTHORIZED);
         }
         User user = userDetails.getUser();
-        return eventService.createEvent(event, user);
+        return eventService.createEvent(eventDTO, user);
     }
 
 
@@ -50,9 +51,9 @@ public class EventController {
 
 
     @PutMapping("/update/{eventId}") //Update an event
-    public ResponseEntity<String> updateEvent(@PathVariable Long eventId, @RequestBody Event updatedEvent, @AuthenticationPrincipal UserInfoDetails userDetails){
+    public ResponseEntity<String> updateEvent(@PathVariable Long eventId, @RequestBody EventDTO updatedEventDTO, @AuthenticationPrincipal UserInfoDetails userDetails){
         User user = userDetails.getUser();
-        return eventService.updateEvent(eventId, updatedEvent, user);
+        return eventService.updateEvent(eventId, updatedEventDTO, user);
     }
 
     @DeleteMapping("/cancel/{eventId}") //Cancel or delete an event

@@ -3,6 +3,7 @@ package com.eventManagement.EMS.models;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -20,23 +21,23 @@ public class Venue {
     @OneToMany(mappedBy = "venue")
     private List<Event> events;
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany
     @JoinTable(
             name = "venue_managers",
             joinColumns = @JoinColumn(name = "venue_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
-    private List<User> venueManager;
+    private List<User> venueManagers = new ArrayList<>();
 
     public Venue() {}
 
-    public Venue(Long id, String name, String location, int maxCapacity, List<Event> events, List<User> venueManager) {
+    public Venue(Long id, String name, String location, int maxCapacity, List<Event> events, List<User> venueManagers) {
         this.id = id;
         this.name = name;
         this.location = location;
         this.maxCapacity = maxCapacity;
         this.events = events;
-        this.venueManager = venueManager;
+        this.venueManagers = venueManagers;
     }
 
     public Long getId() {
@@ -79,11 +80,11 @@ public class Venue {
         this.events = events;
     }
 
-    public List<User> getVenueManager() {
-        return venueManager;
+    public List<User> getVenueManagers() {
+        return venueManagers;
     }
 
-    public void setVenueManager(List<User> venueManager) {
-        this.venueManager = venueManager;
+    public void setVenueManagers(List<User> venueManagers) {
+        this.venueManagers = venueManagers;
     }
 }

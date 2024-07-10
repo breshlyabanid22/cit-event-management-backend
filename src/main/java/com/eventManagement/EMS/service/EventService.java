@@ -1,13 +1,19 @@
 package com.eventManagement.EMS.service;
 
+import com.eventManagement.EMS.DTO.EventDTO;
 import com.eventManagement.EMS.models.Event;
 import com.eventManagement.EMS.models.User;
+import com.eventManagement.EMS.models.Venue;
 import com.eventManagement.EMS.repository.EventRepository;
+import com.eventManagement.EMS.repository.VenueRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,22 +23,36 @@ public class EventService {
     @Autowired
     EventRepository eventRepository;
 
-    public ResponseEntity<String> createEvent(Event event, User user){
-
-        if(event.getName() == null || event.getStartTime() == null || event.getEndTime() == null || event.getCapacity() <= 0){
+    @Autowired
+    VenueRepository venueRepository;
+    public ResponseEntity<String> createEvent(EventDTO eventDTO, User user){
+        Optional<Venue> eventVenueOpt = venueRepository.findById(eventDTO.getVenueId());
+        if(eventDTO.getName() == null || eventDTO.getStartTime() == null || eventDTO.getEndTime() == null || eventDTO.getCapacity() <= 0){
             return new ResponseEntity<>("Invalid event data", HttpStatus.BAD_REQUEST);
+        }
+        if(!eventVenueOpt.isPresent()){
+            return new ResponseEntity<>("Venue not found", HttpStatus.NOT_FOUND);
         }
 
         List<Event> conflictingEvents = eventRepository.findByVenueAndTimeRange(
-                event.getVenue(),
-                event.getStartTime(),
-                event.getEndTime()
+                eventDTO.getVenueId(),
+                eventDTO.getStartTime(),
+                eventDTO.getEndTime()
         );
         if(!conflictingEvents.isEmpty()){
             return new ResponseEntity<>("The venue is already reserved for the specified date", HttpStatus.CONFLICT);
         }
-
+        Venue eventVenue = eventVenueOpt.get();
+        Event event = new Event();
+        event.setVenue(eventVenue);
+        event.setName(eventDTO.getName());
+        event.setDescription(eventDTO.getDescription());
+        event.setCapacity(eventDTO.getCapacity());
+        event.setStartTime(eventDTO.getStartTime());
+        event.setEndTime(eventDTO.getEndTime());
+        event.setStatus("PENDING");
         event.setOrganizer(user);
+        event.setCreatedAt(LocalDateTime.now().format(DateTimeFormatter.ofPattern("E, MMM dd yyyy")));
         eventRepository.save(event);
         return new ResponseEntity<>("Event created successfully", HttpStatus.CREATED);
     }
@@ -62,8 +82,9 @@ public class EventService {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    public ResponseEntity<String> updateEvent(Long eventId, Event updatedEvent, User user){
+    public ResponseEntity<String> updateEvent(Long eventId, EventDTO updatedEventDTO, User user){
         Optional<Event> existingEventOpt = eventRepository.findById(eventId);
+        Optional<Venue> venueEventOpt = venueRepository.findById(updatedEventDTO.getVenueId());
 
         if(existingEventOpt.isPresent()){
             Event existingEvent = existingEventOpt.get();
@@ -72,9 +93,9 @@ public class EventService {
             if(user.getRole().equals("ADMIN") || existingEvent.getOrganizer().getUserID().equals(user.getUserID())){
 
                 List<Event> conflictingEvents =eventRepository.findByVenueAndTimeRange(
-                        updatedEvent.getVenue(),
-                        updatedEvent.getStartTime(),
-                        updatedEvent.getEndTime()
+                        updatedEventDTO.getVenueId(),
+                        updatedEventDTO.getStartTime(),
+                        updatedEventDTO.getEndTime()
                 );
 
                 // Exclude the event being updated from conflict checks
@@ -83,13 +104,15 @@ public class EventService {
                 if(!conflictingEvents.isEmpty()){
                     return new ResponseEntity<>("The venue is already reserved for the specified date", HttpStatus.CONFLICT);
                 }
+                Venue eventVenue = venueEventOpt.get();
                 //update the event details
-                existingEvent.setName(updatedEvent.getName());
-                existingEvent.setDescription(updatedEvent.getDescription());
-                existingEvent.setCapacity(updatedEvent.getCapacity());
-                existingEvent.setVenue(updatedEvent.getVenue());
-                existingEvent.setStartTime(updatedEvent.getStartTime());
-                existingEvent.setEndTime(updatedEvent.getEndTime());
+                existingEvent.setName(updatedEventDTO.getName() != null ? updatedEventDTO.getName() : existingEvent.getName());
+                existingEvent.setDescription(updatedEventDTO.getDescription() != null ? updatedEventDTO.getDescription() : existingEvent.getDescription());
+                existingEvent.setCapacity(updatedEventDTO.getCapacity() != existingEvent.getCapacity() ? updatedEventDTO.getCapacity() : existingEvent.getCapacity());
+                existingEvent.setVenue(eventVenue != null ? eventVenue : existingEvent.getVenue());
+                existingEvent.setStartTime(updatedEventDTO.getStartTime() != null ? updatedEventDTO.getStartTime() : existingEvent.getStartTime());
+                existingEvent.setEndTime(updatedEventDTO.getEndTime() != null ? updatedEventDTO.getEndTime() : existingEvent.getEndTime());
+                existingEvent.setStatus(updatedEventDTO.getStatus() != null ? updatedEventDTO.getStatus() : existingEvent.getStatus());
 
                 eventRepository.save(existingEvent);
                 return new ResponseEntity<>("Event updated successfully", HttpStatus.OK);
