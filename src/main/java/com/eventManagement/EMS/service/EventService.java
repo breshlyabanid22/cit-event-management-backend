@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,7 +29,7 @@ public class EventService {
         if(eventDTO.getName() == null || eventDTO.getStartTime() == null || eventDTO.getEndTime() == null || eventDTO.getCapacity() <= 0){
             return new ResponseEntity<>("Invalid event data", HttpStatus.BAD_REQUEST);
         }
-        if(!eventVenueOpt.isPresent()){
+        if(eventVenueOpt.isEmpty()){
             return new ResponseEntity<>("Venue not found", HttpStatus.NOT_FOUND);
         }
 
@@ -76,10 +75,7 @@ public class EventService {
     public ResponseEntity<Event> getEventById(Long eventId){
         Optional <Event> eventOpt = eventRepository.findById(eventId);
 
-        if(eventOpt.isPresent()){
-            return new ResponseEntity<>(eventOpt.get(), HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        return eventOpt.map(event -> new ResponseEntity<>(event, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     public ResponseEntity<String> updateEvent(Long eventId, EventDTO updatedEventDTO, User user){
@@ -104,12 +100,17 @@ public class EventService {
                 if(!conflictingEvents.isEmpty()){
                     return new ResponseEntity<>("The venue is already reserved for the specified date", HttpStatus.CONFLICT);
                 }
-                Venue eventVenue = venueEventOpt.get();
+
+                if(venueEventOpt.isPresent()){
+                    Venue eventVenue = venueEventOpt.get();
+                    existingEvent.setVenue(eventVenue);
+                }else{
+                    existingEvent.setVenue(existingEvent.getVenue());
+                }
                 //update the event details
                 existingEvent.setName(updatedEventDTO.getName() != null ? updatedEventDTO.getName() : existingEvent.getName());
                 existingEvent.setDescription(updatedEventDTO.getDescription() != null ? updatedEventDTO.getDescription() : existingEvent.getDescription());
                 existingEvent.setCapacity(updatedEventDTO.getCapacity() != existingEvent.getCapacity() ? updatedEventDTO.getCapacity() : existingEvent.getCapacity());
-                existingEvent.setVenue(eventVenue != null ? eventVenue : existingEvent.getVenue());
                 existingEvent.setStartTime(updatedEventDTO.getStartTime() != null ? updatedEventDTO.getStartTime() : existingEvent.getStartTime());
                 existingEvent.setEndTime(updatedEventDTO.getEndTime() != null ? updatedEventDTO.getEndTime() : existingEvent.getEndTime());
                 existingEvent.setStatus(updatedEventDTO.getStatus() != null ? updatedEventDTO.getStatus() : existingEvent.getStatus());
