@@ -52,6 +52,7 @@ public class User {
     @OneToMany(mappedBy = "venueManagers")
     private List<Venue> managedVenues;
 
+    private boolean active;
 
     public User(){}
 
@@ -214,5 +215,13 @@ public class User {
 
     public void setManagedVenues(List<Venue> managedVenues) {
         this.managedVenues = managedVenues;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 }

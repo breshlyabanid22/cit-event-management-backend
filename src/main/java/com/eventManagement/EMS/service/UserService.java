@@ -64,6 +64,7 @@ public class UserService {
             return new ResponseEntity<>("School ID already exists", HttpStatus.CONFLICT);
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setActive(true);
 
         LocalDateTime dateObject = LocalDateTime.now();
         DateTimeFormatter formatObject = DateTimeFormatter.ofPattern("E, MMM dd yyyy");
@@ -107,7 +108,6 @@ public class UserService {
             existingUser.setYear(updatedUser.getYear() != null ? updatedUser.getYear() : existingUser.getYear());
             existingUser.setCourse(updatedUser.getCourse() != null ? updatedUser.getCourse() : existingUser.getCourse());
             existingUser.setDepartment(updatedUser.getDepartment() != null ? updatedUser.getDepartment() : existingUser.getDepartment());
-
             if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
                 existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
             }
@@ -163,5 +163,12 @@ public class UserService {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
+    public ResponseEntity<String> deactivateAccount(User user){
+        user.setActive(false);
+        userRepository.save(user);
+        return new ResponseEntity<>("Account deactivated successfully", HttpStatus.OK);
+    }
+
 
 }

@@ -14,12 +14,12 @@ import java.util.List;
 @Repository
 public interface EventRepository extends JpaRepository<Event, Long> {
 
-    @Query("SELECT e FROM Event e WHERE e.venue = :venue AND " +
+    @Query("SELECT e FROM Event e WHERE e.venue.id = :venueId AND " +
             "((e.startTime BETWEEN :startTime AND :endTime) OR " +
             "(e.endTime BETWEEN :startTime AND :endTime) OR " +
             "(e.startTime <= :startTime AND e.endTime >= :endTime))")
     List<Event> findByVenueAndTimeRange(
-            @Param("venue") Long venue,
+            @Param("venueId") Long venueId,
             @Param("startTime") LocalDateTime startTime,
             @Param("endTime") LocalDateTime endTime
     );

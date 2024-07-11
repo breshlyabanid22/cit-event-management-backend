@@ -10,9 +10,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,7 +28,7 @@ public class EventService {
 
     @Autowired
     VenueRepository venueRepository;
-    public ResponseEntity<String> createEvent(EventDTO eventDTO, User user){
+    public ResponseEntity<String> createEvent(EventDTO eventDTO, MultipartFile imageFile, User user){
         Optional<Venue> eventVenueOpt = venueRepository.findById(eventDTO.getVenueId());
         if(eventDTO.getName() == null || eventDTO.getStartTime() == null || eventDTO.getEndTime() == null || eventDTO.getCapacity() <= 0){
             return new ResponseEntity<>("Invalid event data", HttpStatus.BAD_REQUEST);
@@ -32,12 +36,23 @@ public class EventService {
         if(eventVenueOpt.isEmpty()){
             return new ResponseEntity<>("Venue not found", HttpStatus.NOT_FOUND);
         }
-
         List<Event> conflictingEvents = eventRepository.findByVenueAndTimeRange(
                 eventDTO.getVenueId(),
                 eventDTO.getStartTime(),
                 eventDTO.getEndTime()
         );
+        if(!imageFile.isEmpty()){
+            try {
+                String fileName = imageFile.getOriginalFilename();
+                String uploadDir = "event-images/";
+                String filePath = uploadDir + fileName;
+                File file = new File(filePath);
+                imageFile.transferTo(file);
+                eventDTO.setImagePath(filePath);
+            }catch (IOException e){
+                return new ResponseEntity<>("Failed to upload image", HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        }
         if(!conflictingEvents.isEmpty()){
             return new ResponseEntity<>("The venue is already reserved for the specified date", HttpStatus.CONFLICT);
         }
@@ -51,6 +66,7 @@ public class EventService {
         event.setEndTime(eventDTO.getEndTime());
         event.setStatus("PENDING");
         event.setOrganizer(user);
+        event.setImagePath(eventDTO.getImagePath());
         event.setCreatedAt(LocalDateTime.now().format(DateTimeFormatter.ofPattern("E, MMM dd yyyy")));
         eventRepository.save(event);
         return new ResponseEntity<>("Event created successfully", HttpStatus.CREATED);
@@ -69,9 +85,25 @@ public class EventService {
     }
 
     public ResponseEntity<List<Event>> getAllEvents(){
-        List<Event> events = eventRepository.findAll();
-        return new ResponseEntity<>(events, HttpStatus.OK);
+        List<Event> allEvents = eventRepository.findAll();
+        return new ResponseEntity<>(allEvents, HttpStatus.OK);
     }
+
+    public ResponseEntity<List<Event>> getAllApprovedEvents() {
+        List<Event> events = eventRepository.findAll();
+
+        if (!events.isEmpty()) {
+            List<Event> approvedEvents = new ArrayList<>();
+            for (Event event : events) {
+                if (event.getStatus().equals("Approved")) {
+                    approvedEvents.add(event);
+                }
+            }
+            return new ResponseEntity<>(approvedEvents, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
     public ResponseEntity<Event> getEventById(Long eventId){
         Optional <Event> eventOpt = eventRepository.findById(eventId);
 
@@ -122,6 +154,39 @@ public class EventService {
             }
         }else{
             return new ResponseEntity<>("Event not found", HttpStatus.NOT_FOUND);
+        }
+    }
+
+
+    public ResponseEntity<String> approveEvent(Long userId, User user){
+        Optional<Event> eventOptional = eventRepository.findById(userId);
+
+        if(eventOptional.isEmpty()){
+            return new ResponseEntity<>("Event does not exist", HttpStatus.NOT_FOUND);
+        }
+        Event event = eventOptional.get();
+        if(user.getRole().equals("VENUE_MANAGER") || user.getRole().equals("ADMIN")){
+            event.setStatus("Approved");
+            eventRepository.save(event);
+            return  new ResponseEntity<>("Event has been approved", HttpStatus.OK);
+        }else {
+            return new ResponseEntity<>("User is not authorized to approve the event", HttpStatus.UNAUTHORIZED);
+        }
+    }
+
+    public ResponseEntity<String> rejectEvent(Long userId, User user){
+        Optional<Event> eventOptional = eventRepository.findById(userId);
+
+        if(eventOptional.isEmpty()){
+            return new ResponseEntity<>("Event does not exist", HttpStatus.NOT_FOUND);
+        }
+        Event event = eventOptional.get();
+        if(user.getRole().equals("VENUE_MANAGER") || user.getRole().equals("ADMIN")){
+            event.setStatus("Rejected");
+            eventRepository.save(event);
+            return  new ResponseEntity<>("Event has been approved", HttpStatus.OK);
+        }else {
+            return new ResponseEntity<>("User is not authorized to approve the event", HttpStatus.UNAUTHORIZED);
         }
     }
 

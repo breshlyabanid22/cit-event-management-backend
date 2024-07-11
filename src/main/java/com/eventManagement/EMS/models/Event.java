@@ -2,6 +2,7 @@ package com.eventManagement.EMS.models;
 
 import jakarta.persistence.*;
 
+import java.io.File;
 import java.time.LocalDateTime;
 
 
@@ -38,21 +39,23 @@ public class Event {
 
     private String updatedAt;
 
+    private String imagePath;
     public Event() {
     }
 
-    public Event(Long id, String name, String description, LocalDateTime startTime, LocalDateTime endTime, Venue venue, int capacity, User organizer, String status, String createdAt, String updatedAt) {
+    public Event(Long id, String name, String description, LocalDateTime startTime, LocalDateTime endTime, int capacity, Venue venue, User organizer, String status, String createdAt, String updatedAt, String imagePath) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.startTime = startTime;
         this.endTime = endTime;
-        this.venue = venue;
         this.capacity = capacity;
+        this.venue = venue;
         this.organizer = organizer;
         this.status = status;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.imagePath = imagePath;
     }
 
     public String getName() {
@@ -137,5 +140,13 @@ public class Event {
 
     public void setCapacity(int capacity) {
         this.capacity = capacity;
+    }
+
+    public String getImagePath() {
+        return imagePath;
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
     }
 }

@@ -19,26 +19,34 @@ public class EventDTO {
 
     private LocalDateTime endTime;
 
+    private String organizerDTO;
+
     private int capacity;
 
+    private String venueName;
     private Long venueId;
-
-    @ManyToOne
-    @JoinColumn(name = "organizer_id")
-    private User organizer;
 
     private String status;
 
+    private String imagePath;
     public Long getId() {
         return id;
     }
 
-    public User getOrganizer() {
-        return organizer;
+    public String getVenueName() {
+        return venueName;
     }
 
-    public void setOrganizer(User organizer) {
-        this.organizer = organizer;
+    public void setVenueName(String venueName) {
+        this.venueName = venueName;
+    }
+
+    public String getOrganizerDTO() {
+        return organizerDTO;
+    }
+
+    public void setOrganizerDTO(String organizerDTO) {
+        this.organizerDTO = organizerDTO;
     }
 
     public String getStatus() {
@@ -99,5 +107,13 @@ public class EventDTO {
 
     public void setVenueId(Long venueId) {
         this.venueId = venueId;
+    }
+
+    public String getImagePath() {
+        return imagePath;
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
     }
 }

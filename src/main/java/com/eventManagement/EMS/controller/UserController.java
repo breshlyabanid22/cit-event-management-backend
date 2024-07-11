@@ -45,7 +45,7 @@ public class UserController {
         return new ResponseEntity<>("Logout successful", HttpStatus.OK);
     }
 
-    @PutMapping("/updateProfile")
+    @PutMapping("/myaccount/update")
     public ResponseEntity<String> updateProfile(@AuthenticationPrincipal UserDetails userDetails, @RequestBody User updatedUser) {
         Long userId = getUserIdFromUserDetails(userDetails);
         return userService.updateProfile(userId, updatedUser);
@@ -62,6 +62,12 @@ public class UserController {
     public ResponseEntity<User> getCurrentLoginUser(@AuthenticationPrincipal UserInfoDetails userDetails){
         Long userId = userDetails.getId();
         return userService.getCurrentUser(userId);
+    }
+
+    @DeleteMapping("/myaccount/deactivate")
+    public ResponseEntity<String> deactivateMyAccount(@AuthenticationPrincipal UserInfoDetails userInfoDetails){
+        User user = userInfoDetails.getUser();
+        return userService.deactivateAccount(user);
     }
 
 
