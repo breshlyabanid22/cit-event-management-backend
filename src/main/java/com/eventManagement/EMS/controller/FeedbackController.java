@@ -45,4 +45,13 @@ public class FeedbackController {
         User user = userInfoDetails.getUser();
         return feedbackService.editFeedback(feedbackId, updatedFeedback, user);
     }
+
+    @DeleteMapping("/delete/{feedbackId}")
+    public ResponseEntity<String> deleteFeedback(Long feedbackId, @AuthenticationPrincipal UserInfoDetails userInfoDetails){
+        if(userInfoDetails == null){
+            return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+        }
+        User user = userInfoDetails.getUser();
+        return feedbackService.deleteFeedback(feedbackId, user);
+    }
 }

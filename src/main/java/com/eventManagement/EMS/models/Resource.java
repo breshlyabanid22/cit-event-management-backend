@@ -19,7 +19,7 @@ public class Resource {
 
     private String type;
 
-    private Boolean availability;
+    private boolean availability;
 
     public Resource() {
     }

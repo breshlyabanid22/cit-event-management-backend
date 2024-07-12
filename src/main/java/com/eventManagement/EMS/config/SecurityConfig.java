@@ -36,7 +36,7 @@ public class SecurityConfig{
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/users/**").permitAll()
-                .requestMatchers("/admin/**").hasAuthority("ADMIN")
+                .requestMatchers("/admin/**", "/resource/**").hasAuthority("ADMIN")
                 .anyRequest().authenticated())
             .logout(logout -> logout
                     .logoutUrl("/users/logout")

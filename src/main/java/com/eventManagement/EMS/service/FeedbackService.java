@@ -57,12 +57,23 @@ public class FeedbackService {
         // Checks if the logged-in user is the one who wrote the feedback
         if(feedback.getUser().getUserID().equals(user.getUserID())){
             feedback.setComments(updatedFeedback.getComments() != null ? updatedFeedback.getComments() : feedback.getComments());
-            int newRate = updatedFeedback.getRate() != -1 ? updatedFeedback.getRate() : feedback.getRate();
-            feedback.setRate(newRate);
+            if(updatedFeedback.getRate() >= 0 && updatedFeedback != null){
+                feedback.setRate(updatedFeedback.getRate());
+            }else{
+                feedback.setRate(feedback.getRate());
+            }
             feedback.setSubmittedAt(LocalDateTime.now().format(DateTimeFormatter.ofPattern("E MMM dd yyyy")));
             return new ResponseEntity<>("Feedback has been updated", HttpStatus.OK);
         }
         return new ResponseEntity<>("User not authorized", HttpStatus.NOT_FOUND);
+    }
+
+
+    public ResponseEntity<String> deleteFeedback(Long feedbackId, User user){
+        Optional<Feedback> feedbackOptional = feedbackRepository.findById(feedbackId);
+        Feedback feedback = feedbackOptional.get();
+        feedbackRepository.delete(feedback);
+        return new ResponseEntity<>("Feedback has been deleted", HttpStatus.NO_CONTENT);
     }
 
 }
