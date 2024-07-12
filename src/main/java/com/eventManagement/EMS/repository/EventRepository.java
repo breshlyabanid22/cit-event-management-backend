@@ -2,6 +2,7 @@ package com.eventManagement.EMS.repository;
 
 
 import com.eventManagement.EMS.models.Event;
+import com.eventManagement.EMS.models.User;
 import com.eventManagement.EMS.models.Venue;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface EventRepository extends JpaRepository<Event, Long> {
@@ -25,4 +27,6 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     );
 
     List<Event> findByVenueId(Long venue);
+    Optional<Event> findByOrganizer(User user);
+
 }

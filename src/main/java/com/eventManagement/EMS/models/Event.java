@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 
 import java.io.File;
 import java.time.LocalDateTime;
+import java.util.List;
 
 
 @Entity
@@ -33,6 +34,9 @@ public class Event {
     @JoinColumn(name = "organizer_id")
     private User organizer;
 
+    @OneToMany(mappedBy = "event")
+    private List<Feedback> feedback;
+
     private String status;
 
     private String createdAt;
@@ -43,7 +47,7 @@ public class Event {
     public Event() {
     }
 
-    public Event(Long id, String name, String description, LocalDateTime startTime, LocalDateTime endTime, int capacity, Venue venue, User organizer, String status, String createdAt, String updatedAt, String imagePath) {
+    public Event(Long id, String name, String description, LocalDateTime startTime, LocalDateTime endTime, int capacity, Venue venue, User organizer, String status, String createdAt, List<Feedback> feedback, String updatedAt, String imagePath) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -53,6 +57,7 @@ public class Event {
         this.venue = venue;
         this.organizer = organizer;
         this.status = status;
+        this.feedback =feedback;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.imagePath = imagePath;
@@ -132,6 +137,14 @@ public class Event {
 
     public void setEndTime(LocalDateTime endTime) {
         this.endTime = endTime;
+    }
+
+    public List<Feedback> getFeedback() {
+        return feedback;
+    }
+
+    public void setFeedback(List<Feedback> feedback) {
+        this.feedback = feedback;
     }
 
     public int getCapacity() {

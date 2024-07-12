@@ -45,8 +45,8 @@ public class UserController {
         return new ResponseEntity<>("Logout successful", HttpStatus.OK);
     }
 
-    @PutMapping("/myaccount/update")
-    public ResponseEntity<String> updateProfile(@AuthenticationPrincipal UserDetails userDetails, @RequestBody User updatedUser) {
+    @PutMapping("/account/update")//User updates their user profile
+    public ResponseEntity<String> updateMyProfile(@AuthenticationPrincipal UserDetails userDetails, @RequestBody User updatedUser) {
         Long userId = getUserIdFromUserDetails(userDetails);
         return userService.updateProfile(userId, updatedUser);
     }
@@ -58,13 +58,8 @@ public class UserController {
         throw new IllegalArgumentException("Invalid user details");
     }
 
-    @GetMapping("/getUser")
-    public ResponseEntity<User> getCurrentLoginUser(@AuthenticationPrincipal UserInfoDetails userDetails){
-        Long userId = userDetails.getId();
-        return userService.getCurrentUser(userId);
-    }
 
-    @DeleteMapping("/myaccount/deactivate")
+    @DeleteMapping("/account/deactivate")
     public ResponseEntity<String> deactivateMyAccount(@AuthenticationPrincipal UserInfoDetails userInfoDetails){
         User user = userInfoDetails.getUser();
         return userService.deactivateAccount(user);

@@ -1,11 +1,13 @@
 package com.eventManagement.EMS.controller;
 
 
+import com.eventManagement.EMS.config.UserInfoDetails;
 import com.eventManagement.EMS.models.User;
 import com.eventManagement.EMS.repository.UserRepository;
 import com.eventManagement.EMS.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,9 +27,9 @@ public class AdminController {
     }
 
 
-    @PutMapping("/update/{id}")//Admin can update user details including roles
-    public ResponseEntity<String> update(@PathVariable Long id, @RequestBody User updatedUser) {
-        return userService.update(id, updatedUser);
+    @PutMapping("/{userId}/update")
+    public ResponseEntity<String> updateUser(Long userId, @RequestBody User updatedUser){
+        return userService.updateUser(userId, updatedUser);
     }
 
 

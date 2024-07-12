@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,12 +32,12 @@ public class EventRegistrationService {
     public ResponseEntity<String> registerToEvent(Long eventId, Long userId){
         Optional<Event> eventOpt = eventRepository.findById(eventId);
 
-        if(!eventOpt.isPresent()){
+        if(eventOpt.isEmpty()){
             return new ResponseEntity<>("Event not found", HttpStatus.NOT_FOUND);
         }
 
         Optional<User> userOpt = userRepository.findById(userId);
-        if(!userOpt.isPresent()){
+        if(userOpt.isEmpty()){
             return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
         }
         Event event = eventOpt.get();
@@ -62,6 +63,9 @@ public class EventRegistrationService {
         Optional<Event> eventOpt = eventRepository.findById(eventId);
         Optional<User> userOpt = userRepository.findById(userId);
 
+        if(eventOpt.isEmpty()){ return new ResponseEntity<>("Event not found", HttpStatus.NOT_FOUND);}
+        if(userOpt.isEmpty()){return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);}
+
         Event event = eventOpt.get();
         User user = userOpt.get();
 
@@ -76,14 +80,69 @@ public class EventRegistrationService {
     }
 
     //Displays all users that are registered to a specific event
-    public ResponseEntity<List<EventRegistration>> getAllEventRegistrationsByEvent(Long eventId){
-        List<EventRegistration> registrations = eventRegistrationRepository.findByEventId(eventId);
-
+    public ResponseEntity<List<EventRegistration>> getAllEventRegistrations(){
+        List<EventRegistration> registrations = eventRegistrationRepository.findAll();
         if(registrations.isEmpty()){
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(registrations, HttpStatus.OK);
     }
 
+    //This is accessed by organizers, so they can view the list of users who registered to the event
+    public ResponseEntity<List<EventRegistration>> getAllRegisteredUsersToMyEvent(Long eventId, User user){
+        Optional<User> userOptional = userRepository.findById(user.getUserID());
+        Optional<Event> eventOptional = eventRepository.findById(eventId);
+        List<EventRegistration> registrations = eventRegistrationRepository.findByEventId(eventId);
+
+        if(userOptional.isEmpty()){return new ResponseEntity<>(HttpStatus.NOT_FOUND);}
+        if(eventOptional.isEmpty()){ return new ResponseEntity<>(HttpStatus.NOT_FOUND);}
+
+        User user1 = userOptional.get();
+        Event event = eventOptional.get();
+        if(user1.getRole().equals("ORGANIZER") && event.getOrganizer().getUserID().equals(user1.getUserID())){
+            return new ResponseEntity<>(registrations, HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+    }
+    //This is accessible by organizers of a specific events
+    public ResponseEntity<String> acceptRegistrationRequest(Long registrationId, User user){
+        Optional<EventRegistration> registrationOptional = eventRegistrationRepository.findById(registrationId);
+
+        if(registrationOptional.isEmpty()){ return new ResponseEntity<>("Registration not found", HttpStatus.NOT_FOUND);}
+        EventRegistration registration = registrationOptional.get();
+        Long eventId = registration.getEvent().getId();
+        if(user.getOrganizedEvents().stream().anyMatch(e -> e.getId().equals(eventId))){
+            registration.setStatus("Accepted");
+            return new ResponseEntity<>("Your join request has been accepted", HttpStatus.ACCEPTED);
+        }
+        return new ResponseEntity<>("User is not an organizer to this event", HttpStatus.NOT_FOUND);
+    }
+
+    public ResponseEntity<String> declineRegistrationRequest(Long registrationId, User user){
+        Optional<EventRegistration> registrationOptional = eventRegistrationRepository.findById(registrationId);
+
+        if(registrationOptional.isEmpty()){ return new ResponseEntity<>("Registration not found", HttpStatus.NOT_FOUND);}
+
+        EventRegistration registration = registrationOptional.get();
+        Long eventId = registration.getEvent().getId();
+        if(user.getOrganizedEvents().stream().anyMatch(e -> e.getId().equals(eventId))){
+            registration.setStatus("Declined");
+            return new ResponseEntity<>("Your join request has been declined", HttpStatus.ACCEPTED);
+        }
+        return new ResponseEntity<>("User is not an organizer to this event", HttpStatus.NOT_FOUND);
+    }
+
+    public ResponseEntity<List<EventRegistration>> getAllAcceptedRequest(){
+        List<EventRegistration> registrations = eventRegistrationRepository.findAll();
+
+        List<EventRegistration> acceptedRegistrations = new ArrayList<>();
+        for(EventRegistration registration : registrations){
+            if(registration.getStatus().equals("Accepted")){
+                acceptedRegistrations.add(registration);
+            }
+        }
+        return new ResponseEntity<>(acceptedRegistrations, HttpStatus.OK);
+    }
 
 }

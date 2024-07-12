@@ -2,21 +2,14 @@ package com.eventManagement.EMS.service;
 
 import com.eventManagement.EMS.models.User;
 import com.eventManagement.EMS.repository.UserRepository;
-import jakarta.annotation.security.RolesAllowed;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cglib.core.Local;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -38,7 +31,7 @@ public class UserService {
     PasswordEncoder passwordEncoder;
 
     @Autowired
-    private AuthenticationManager authenticationManager;
+    AuthenticationManager authenticationManager;
 
 
     public User findByUsername(String username){
@@ -66,11 +59,7 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setActive(true);
 
-        LocalDateTime dateObject = LocalDateTime.now();
-        DateTimeFormatter formatObject = DateTimeFormatter.ofPattern("E, MMM dd yyyy");
-
-        String formattedDate = dateObject.format(formatObject);
-        user.setCreatedAt(formattedDate);
+        user.setCreatedAt(LocalDateTime.now().format(DateTimeFormatter.ofPattern("E, MMM dd yyyy")));
         userRepository.save(user);
         return new ResponseEntity<>("User Registered Successfully", HttpStatus.CREATED);
     }
@@ -85,7 +74,6 @@ public class UserService {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
                 HttpSession session = request.getSession(true); // true to create a new session if it doesn't exist
                 session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, SecurityContextHolder.getContext());
-
                 return new ResponseEntity<>("Login Successful", HttpStatus.OK);
             } else {
                 return new ResponseEntity<>("Invalid username or password", HttpStatus.UNAUTHORIZED);
@@ -96,40 +84,51 @@ public class UserService {
     }
 
 
-
+    //Profile Management for users
     public ResponseEntity<String> updateProfile(Long userId, User updatedUser) {
         Optional<User> userOptional = userRepository.findById(userId);
 
         if (userOptional.isPresent()) {
             User existingUser = userOptional.get();
 
-            existingUser.setUsername(updatedUser.getUsername() != null ? updatedUser.getUsername() : existingUser.getUsername());
+            if(updatedUser.getUsername() != null && updatedUser.getUsername() != " "){
+                //Checks if the updated username is equal to the existing data in the database
+                if(updatedUser.getUsername().equals(existingUser.getUsername())){
+                    existingUser.setUsername(updatedUser.getUsername());
+                }else{
+                    existingUser.setUsername(existingUser.getUsername());
+                }
+            }
             existingUser.setEmail(updatedUser.getEmail() != null ? updatedUser.getEmail() : existingUser.getEmail());
             existingUser.setYear(updatedUser.getYear() != null ? updatedUser.getYear() : existingUser.getYear());
             existingUser.setCourse(updatedUser.getCourse() != null ? updatedUser.getCourse() : existingUser.getCourse());
             existingUser.setDepartment(updatedUser.getDepartment() != null ? updatedUser.getDepartment() : existingUser.getDepartment());
-            if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
+            if (updatedUser.getPassword() != null && updatedUser.getPassword() != "") {
                 existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
             }
-            LocalDateTime dateObject = LocalDateTime.now();
-            DateTimeFormatter formatObject = DateTimeFormatter.ofPattern("E, MMM dd yyyy");
 
-            String formattedDate = dateObject.format(formatObject);
-            existingUser.setUpdatedAt(formattedDate);
+            existingUser.setUpdatedAt(LocalDateTime.now().format(DateTimeFormatter.ofPattern("E MMM dd yyyy")));
             userRepository.save(existingUser);
             return new ResponseEntity<>("User profile updated successfully", HttpStatus.OK);
         } else {
             return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
         }
     }
-
-    public ResponseEntity<String> update(Long userId, User updatedUser) {
+    //Admin can update users' profile
+    public ResponseEntity<String> updateUser(Long userId, User updatedUser) {
         Optional<User> userOptional = userRepository.findById(userId);
 
         if (userOptional.isPresent()) {
             User existingUser = userOptional.get();
 
-            existingUser.setUsername(updatedUser.getUsername() != null ? updatedUser.getUsername() : existingUser.getUsername());
+            if(updatedUser.getUsername() != null && updatedUser.getUsername() != " "){
+                //Checks if the updated username is equal to the existing data in the database
+                if(updatedUser.getUsername().equals(existingUser.getUsername())){
+                    existingUser.setUsername(updatedUser.getUsername());
+                }else{
+                    existingUser.setUsername(existingUser.getUsername());
+                }
+            }
             existingUser.setEmail(updatedUser.getEmail() != null ? updatedUser.getEmail() : existingUser.getEmail());
             existingUser.setFirstName(updatedUser.getFirstName() != null ? updatedUser.getFirstName() : existingUser.getFirstName());
             existingUser.setLastName(updatedUser.getLastName() != null ? updatedUser.getLastName() : existingUser.getLastName());
@@ -139,7 +138,6 @@ public class UserService {
             existingUser.setDepartment(updatedUser.getDepartment() != null ? updatedUser.getDepartment() : existingUser.getDepartment());
             existingUser.setRole(updatedUser.getRole() != null ? updatedUser.getRole() : existingUser.getRole() );
             existingUser.setSchoolID(updatedUser.getSchoolID() != null ? updatedUser.getSchoolID() : existingUser.getSchoolID());
-//            existingUser.setManagedVenues(updatedUser.getManagedVenues() != null ? updatedUser.getManagedVenues() : existingUser.getManagedVenues());
 
             if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
                 existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
