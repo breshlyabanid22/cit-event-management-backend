@@ -33,6 +33,8 @@ public class UserService {
     @Autowired
     AuthenticationManager authenticationManager;
 
+    @Autowired
+    NotificationService notificationService;
 
     public User findByUsername(String username){
         return userRepository.findByUsername(username)
@@ -83,7 +85,6 @@ public class UserService {
         }
     }
 
-
     //Profile Management for users
     public ResponseEntity<String> updateProfile(Long userId, User updatedUser) {
         Optional<User> userOptional = userRepository.findById(userId);
@@ -109,6 +110,8 @@ public class UserService {
 
             existingUser.setUpdatedAt(LocalDateTime.now().format(DateTimeFormatter.ofPattern("E MMM dd yyyy")));
             userRepository.save(existingUser);
+            String message = "Your profile has been updated!";
+            notificationService.regularNotification(existingUser, message);
             return new ResponseEntity<>("User profile updated successfully", HttpStatus.OK);
         } else {
             return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);

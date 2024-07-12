@@ -1,10 +1,7 @@
 package com.eventManagement.EMS.models;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 @Entity
 public class Resource {
@@ -20,6 +17,10 @@ public class Resource {
     private String type;
 
     private boolean availability;
+
+    @ManyToOne
+    @JoinColumn(name = "eventId")
+    private Event eventResource;
 
     public Resource() {
     }

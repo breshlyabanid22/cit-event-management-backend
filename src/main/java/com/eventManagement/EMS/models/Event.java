@@ -2,8 +2,8 @@ package com.eventManagement.EMS.models;
 
 import jakarta.persistence.*;
 
-import java.io.File;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -37,6 +37,9 @@ public class Event {
     @OneToMany(mappedBy = "event")
     private List<Feedback> feedback;
 
+    @OneToMany(mappedBy = "eventResource", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Resource> resources = new ArrayList<>();
+
     private String status;
 
     private String createdAt;
@@ -47,7 +50,7 @@ public class Event {
     public Event() {
     }
 
-    public Event(Long id, String name, String description, LocalDateTime startTime, LocalDateTime endTime, int capacity, Venue venue, User organizer, String status, String createdAt, List<Feedback> feedback, String updatedAt, String imagePath) {
+    public Event(Long id, String name, String description, LocalDateTime startTime, LocalDateTime endTime, int capacity, Venue venue, User organizer, String status, String createdAt, List<Feedback> feedback, List<Resource> resources, String updatedAt, String imagePath) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -58,6 +61,7 @@ public class Event {
         this.organizer = organizer;
         this.status = status;
         this.feedback =feedback;
+        this.resources = resources;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.imagePath = imagePath;
@@ -145,6 +149,14 @@ public class Event {
 
     public void setFeedback(List<Feedback> feedback) {
         this.feedback = feedback;
+    }
+
+    public List<Resource> getResources() {
+        return resources;
+    }
+
+    public void setResources(List<Resource> resources) {
+        this.resources = resources;
     }
 
     public int getCapacity() {

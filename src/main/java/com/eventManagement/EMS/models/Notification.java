@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 
 
 @Entity
+@Table(name = "notifications")
 public class Notification {
 
     @Id
@@ -13,11 +14,11 @@ public class Notification {
     @ManyToOne
     @JoinColumn(name = "recipient", nullable = false)
     private User recipient;
-
+    @Column(name = "message", nullable = false)
     private String message;
 
     @ManyToOne
-    @JoinColumn(name = "event_id", nullable = false)
+    @JoinColumn(name = "event")
     private Event event;
 
     private String createdAt;

@@ -26,7 +26,8 @@ public class EventRegistrationService {
 
     @Autowired
     EventRepository eventRepository;
-
+    @Autowired
+    NotificationService notificationService;
     @Autowired
     UserRepository userRepository;
     public ResponseEntity<String> registerToEvent(Long eventId, Long userId){
@@ -112,10 +113,15 @@ public class EventRegistrationService {
         if(registrationOptional.isEmpty()){ return new ResponseEntity<>("Registration not found", HttpStatus.NOT_FOUND);}
         EventRegistration registration = registrationOptional.get();
         Long eventId = registration.getEvent().getId();
+        //Checks if the user is the organizer of the event
         if(user.getOrganizedEvents().stream().anyMatch(e -> e.getId().equals(eventId))){
             registration.setStatus("Accepted");
+
+            String message = "Hi " + registration.getUser().getFirstName() + ", your join request to " + registration.getEvent().getName() + " has been approved.";
+            notificationService.createNotification(registration.getUser(), message, registration.getEvent());
             return new ResponseEntity<>("Your join request has been accepted", HttpStatus.ACCEPTED);
         }
+
         return new ResponseEntity<>("User is not an organizer to this event", HttpStatus.NOT_FOUND);
     }
 
@@ -128,6 +134,8 @@ public class EventRegistrationService {
         Long eventId = registration.getEvent().getId();
         if(user.getOrganizedEvents().stream().anyMatch(e -> e.getId().equals(eventId))){
             registration.setStatus("Declined");
+            String message = "Sorry " + registration.getUser().getFirstName() + ", but your join request to " + registration.getEvent().getName() + " has been declined.";
+            notificationService.createNotification(registration.getUser(), message, registration.getEvent());
             return new ResponseEntity<>("Your join request has been declined", HttpStatus.ACCEPTED);
         }
         return new ResponseEntity<>("User is not an organizer to this event", HttpStatus.NOT_FOUND);

@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 
-@RequestMapping("/events/")
+@RequestMapping("/events")
 @RestController
 public class EventRegistrationController {
 
@@ -22,12 +22,12 @@ public class EventRegistrationController {
     EventRegistrationService eventRegistrationService;
 
 
-    @PostMapping("{eventId}/register") //Registers a user to an event
-    public ResponseEntity<String> registerToEvent(@PathVariable Long eventId, @RequestParam Long userId){
+    @PostMapping("/register") //Registers a user to an event
+    public ResponseEntity<String> registerToEvent(@RequestParam Long eventId, @RequestParam Long userId){
         return eventRegistrationService.registerToEvent(eventId, userId);
     }
 
-    @PostMapping("{eventId}/cancel")// When participants want to cancel the registration
+    @PostMapping("/{eventId}/cancel")// When participants want to cancel the registration
     public ResponseEntity<String> cancelRegistration(@PathVariable Long eventId, @RequestParam Long userId){
         return eventRegistrationService.cancelRegistration(eventId, userId);
     }

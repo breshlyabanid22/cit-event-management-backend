@@ -2,8 +2,10 @@ package com.eventManagement.EMS.service;
 
 import com.eventManagement.EMS.DTO.EventDTO;
 import com.eventManagement.EMS.models.Event;
+import com.eventManagement.EMS.models.EventRegistration;
 import com.eventManagement.EMS.models.User;
 import com.eventManagement.EMS.models.Venue;
+import com.eventManagement.EMS.repository.EventRegistrationRepository;
 import com.eventManagement.EMS.repository.EventRepository;
 import com.eventManagement.EMS.repository.VenueRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class EventService {
@@ -28,6 +31,12 @@ public class EventService {
 
     @Autowired
     VenueRepository venueRepository;
+
+    @Autowired
+    NotificationService notificationService;
+    @Autowired
+    EventRegistrationRepository eventRegistrationRepository;
+
     public ResponseEntity<String> createEvent(EventDTO eventDTO, MultipartFile imageFile, User user){
         Optional<Venue> eventVenueOpt = venueRepository.findById(eventDTO.getVenueId());
         if(eventDTO.getName() == null || eventDTO.getStartTime() == null || eventDTO.getEndTime() == null || eventDTO.getCapacity() <= 0){
@@ -64,16 +73,17 @@ public class EventService {
         event.setCapacity(eventDTO.getCapacity());
         event.setStartTime(eventDTO.getStartTime());
         event.setEndTime(eventDTO.getEndTime());
-        event.setStatus("PENDING");
+        event.setStatus("Pending");
         event.setOrganizer(user);
         event.setImagePath(eventDTO.getImagePath());
         event.setCreatedAt(LocalDateTime.now().format(DateTimeFormatter.ofPattern("E, MMM dd yyyy")));
+        event.setResources(eventDTO.getResources());
         eventRepository.save(event);
         return new ResponseEntity<>("Event created successfully", HttpStatus.CREATED);
     }
 
     public ResponseEntity<List<Event>> getAllEventsByVenue(Long venueId, User user) {
-        // Check if user is an organizer or admin
+        // Check if user is a venue manager or admin
         if (user.getRole().equals("VENUE_MANAGER") || user.getRole().equals("ADMIN")) {
             // Check if user is assigned to the venue or is an admin
             if (user.getRole().equals("ADMIN") || user.getManagedVenues().stream().anyMatch(v -> v.getId().equals(venueId))) {
@@ -157,7 +167,7 @@ public class EventService {
         }
     }
 
-
+    //This is accessed by admin or venue_manager when approving a proposed event
     public ResponseEntity<String> approveEvent(Long userId, User user){
         Optional<Event> eventOptional = eventRepository.findById(userId);
 
@@ -174,6 +184,7 @@ public class EventService {
         }
     }
 
+    //This is accessed by admin or venue_manager when rejecting a proposed event
     public ResponseEntity<String> rejectEvent(Long userId, User user){
         Optional<Event> eventOptional = eventRepository.findById(userId);
 
@@ -190,6 +201,7 @@ public class EventService {
         }
     }
 
+    //If the organizer wants to cancel the event
     public ResponseEntity<String> cancelEvent(Long eventId, User user){
         Optional<Event> eventOpt = eventRepository.findById(eventId);
         if(eventOpt.isPresent()){
@@ -197,7 +209,12 @@ public class EventService {
 
             //if user is the organizer or admin, allow to delete.
             if(user.getRole().equals("ADMIN") || event.getOrganizer().getUserID().equals(user.getUserID())){
-                eventRepository.delete(event);
+                List<EventRegistration> registrations = eventRegistrationRepository.findByEventId(eventId);
+                List<User> registeredUsers = registrations.stream().map(EventRegistration::getUser).toList();
+                String message = "Sorry, the event " + event.getName() + " has been canceled";
+
+                notificationService.sendNotificationToUser(registeredUsers, message, event);
+                event.setStatus("Canceled");
                 return new ResponseEntity<>("Event has been cancelled", HttpStatus.OK);
             }else{
                 return new ResponseEntity<>("You are not authorized to cancel this event", HttpStatus.FORBIDDEN);

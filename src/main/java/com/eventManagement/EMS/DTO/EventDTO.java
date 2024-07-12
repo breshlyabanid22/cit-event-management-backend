@@ -1,10 +1,12 @@
 package com.eventManagement.EMS.DTO;
 
+import com.eventManagement.EMS.models.Resource;
 import com.eventManagement.EMS.models.User;
 import com.eventManagement.EMS.models.Venue;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class EventDTO {
     @Id
@@ -22,6 +24,8 @@ public class EventDTO {
     private String organizerDTO;
 
     private int capacity;
+
+    private List<Resource> resources;
 
     private String venueName;
     private Long venueId;
@@ -47,6 +51,14 @@ public class EventDTO {
 
     public void setOrganizerDTO(String organizerDTO) {
         this.organizerDTO = organizerDTO;
+    }
+
+    public List<Resource> getResources() {
+        return resources;
+    }
+
+    public void setResources(List<Resource> resources) {
+        this.resources = resources;
     }
 
     public String getStatus() {
