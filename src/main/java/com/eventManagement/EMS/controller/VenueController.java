@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-@RequestMapping("/venue")
+@RequestMapping("/venues")
 @RestController
 public class VenueController {
 
@@ -21,7 +21,7 @@ public class VenueController {
     VenueService venueService;
 
 
-    @PostMapping("/add")
+    @PostMapping
     @PreAuthorize("hasAuthority('ADMIN')") //Only admin users can add a venue
     public ResponseEntity<Venue> addVenue(@RequestBody Venue venue) {
         try {
@@ -30,15 +30,15 @@ public class VenueController {
             } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
-}
+    }
 
     //Gets all venues
-    @GetMapping("/all")//This can be used when displaying all available venues
+    @GetMapping//This can be used when displaying all available venues
     public ResponseEntity<List<Venue>> getAllVenues(){
         return venueService.getAll();
     }
 
-    @DeleteMapping("/delete/{venueId}")
+    @DeleteMapping("/{venueId}")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<String> deleteVenue(@PathVariable Long venueId){
         return venueService.deleteVenue(venueId);

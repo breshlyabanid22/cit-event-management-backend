@@ -24,7 +24,7 @@ public class EventController {
     EventService eventService;
 
 
-    @PostMapping("/create") //Create an event and wait for approval
+    @PostMapping //Create an event and wait for approval
     public ResponseEntity<String> createEvent(
             @RequestBody EventDTO eventDTO,
             MultipartFile imageFile,
@@ -46,26 +46,32 @@ public class EventController {
     }
 
 
-    @GetMapping("/all") // Get all events
+    @GetMapping // Get all events
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<List<Event>> getAllEvents(){
         return eventService.getAllEvents();
     }
 
+    @GetMapping("/{eventId}") //Single event details
+    public ResponseEntity<Event> getEventById(@PathVariable Long eventId){
+        return eventService.getEventById(eventId);
+    }
 
-    @GetMapping("/approvedEvents") //fetches all approved events.These events are displayed in the page and browsed by user
+
+
+    @GetMapping("/approved") //fetches all approved events.These events are displayed in the page and browsed by user
     public ResponseEntity<List<Event>> getAllApproveEvents(){
         return eventService.getAllApprovedEvents();
     }
 
 
-    @PutMapping("/update/{eventId}") //Update an event
+    @PutMapping("/{eventId}") //Update an event
     public ResponseEntity<String> updateEvent(@PathVariable Long eventId, @RequestBody EventDTO updatedEventDTO, @AuthenticationPrincipal UserInfoDetails userDetails){
         User user = userDetails.getUser();
         return eventService.updateEvent(eventId, updatedEventDTO, user);
     }
 
-    @PutMapping("/approval/{eventId}")
+    @PutMapping("/approve/{eventId}")
     @PreAuthorize("hasAuthority('VENUE_MANAGER') || hasAuthority('ADMIN')") //An admin or venue_manager can approve the proposed event
     public ResponseEntity<String> approveEventProposal(@PathVariable Long eventId, @AuthenticationPrincipal UserInfoDetails userInfoDetails){
         if(userInfoDetails == null){
@@ -90,8 +96,5 @@ public class EventController {
         return eventService.cancelEvent(eventId, user);
     }
 
-    @GetMapping("/{eventId}") //Endpoint to display the details of a single event
-    public ResponseEntity<Event> getEventById(@PathVariable Long eventId){
-        return eventService.getEventById(eventId);
-    }
+
 }

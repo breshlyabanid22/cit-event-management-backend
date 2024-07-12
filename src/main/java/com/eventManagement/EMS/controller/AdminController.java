@@ -6,8 +6,10 @@ import com.eventManagement.EMS.models.User;
 import com.eventManagement.EMS.repository.UserRepository;
 import com.eventManagement.EMS.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,18 +22,24 @@ public class AdminController {
 
     @Autowired
     UserService userService;
+    @Autowired
+    UserRepository userRepository;
 
-    @GetMapping("/allUsers")
+    @GetMapping("/users")
     public ResponseEntity<List<User>> getAllUsers(){
         return userService.getAllUsers();
     }
 
 
-    @PutMapping("/{userId}/update")
+    @PutMapping("/user/{userId}")
     public ResponseEntity<String> updateUser(Long userId, @RequestBody User updatedUser){
         return userService.updateUser(userId, updatedUser);
     }
-
+    @DeleteMapping("/user/deactivate/{userId}")
+    public ResponseEntity<String> deactivateMyAccount(@PathVariable Long userId){
+        User user = userRepository.findById(userId).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        return userService.deactivateAccount(user);
+    }
 
 
 }

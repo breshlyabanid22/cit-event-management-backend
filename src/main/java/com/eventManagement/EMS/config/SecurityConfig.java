@@ -35,8 +35,8 @@ public class SecurityConfig{
         http.cors(Customizer.withDefaults())
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/users/**").permitAll()
-                .requestMatchers("/admin/**", "/resource/**").hasAuthority("ADMIN")
+                .requestMatchers("/users/**", "/users").permitAll()
+                .requestMatchers("/admin/**", "/resources/**").hasAuthority("ADMIN")
                 .anyRequest().authenticated())
             .logout(logout -> logout
                     .logoutUrl("/users/logout")

@@ -24,14 +24,12 @@ public class UserController {
     @Autowired
     UserService userService;
 
-
-    @PostMapping("/register")
+    @PostMapping
     public ResponseEntity<String> register(@RequestBody User user){
         if(user.getRole() == null){
             user.setRole("USER");
         }
         return  userService.register(user);
-
     }
 
     @PostMapping("/login")
@@ -45,7 +43,7 @@ public class UserController {
         return new ResponseEntity<>("Logout successful", HttpStatus.OK);
     }
 
-    @PutMapping("/account/update")//User updates their user profile
+    @PutMapping("/account")//User updates their user profile or account
     public ResponseEntity<String> updateMyProfile(@AuthenticationPrincipal UserDetails userDetails, @RequestBody User updatedUser) {
         Long userId = getUserIdFromUserDetails(userDetails);
         return userService.updateProfile(userId, updatedUser);

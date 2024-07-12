@@ -13,15 +13,15 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/feedback")
+@RequestMapping("/feedbacks")
 public class FeedbackController {
 
 
     @Autowired
     FeedbackService feedbackService;
 
-    @PostMapping("/create/{eventId}")
-    public ResponseEntity<String> createFeedback(@RequestBody Feedback feedback, @PathVariable Long eventId, @AuthenticationPrincipal UserInfoDetails userInfoDetails){
+    @PostMapping // Creates a new feedback
+    public ResponseEntity<String> createFeedback(@RequestBody Feedback feedback, @RequestParam Long eventId, @AuthenticationPrincipal UserInfoDetails userInfoDetails){
         if(userInfoDetails == null){
             return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
         }
@@ -29,7 +29,7 @@ public class FeedbackController {
         return feedbackService.createFeedback(feedback, eventId, user);
     }
 
-    @GetMapping("/display/{eventId}") //Get all feedback of a specific event then display
+    @GetMapping("/event/{eventId}") //Get all feedback of a specific event then display
     public ResponseEntity<List<Feedback>> getAllEventFeedback(@PathVariable Long eventId, @AuthenticationPrincipal UserInfoDetails userInfoDetails){
         if(userInfoDetails == null){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -37,7 +37,7 @@ public class FeedbackController {
         return feedbackService.getAllEventFeedback(eventId);
     }
 
-    @PutMapping("/edit/{feedbackId}")
+    @PutMapping("/{feedbackId}")
     public ResponseEntity<String> editFeedback(Long feedbackId, @RequestBody Feedback updatedFeedback, @AuthenticationPrincipal UserInfoDetails userInfoDetails){
         if(userInfoDetails == null){
             return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
@@ -46,7 +46,7 @@ public class FeedbackController {
         return feedbackService.editFeedback(feedbackId, updatedFeedback, user);
     }
 
-    @DeleteMapping("/delete/{feedbackId}")
+    @DeleteMapping("/{feedbackId}")
     public ResponseEntity<String> deleteFeedback(Long feedbackId, @AuthenticationPrincipal UserInfoDetails userInfoDetails){
         if(userInfoDetails == null){
             return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);

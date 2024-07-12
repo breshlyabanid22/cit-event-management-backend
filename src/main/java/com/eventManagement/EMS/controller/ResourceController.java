@@ -10,28 +10,29 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/resource")
+@RequestMapping("/resources")
 public class ResourceController {
 
     //Only admin user can access this endpoints
     @Autowired
     ResourceService resourceService;
 
-    @PostMapping("/add")
+    @PostMapping //Add a resource
     public ResponseEntity<String> addResource(@RequestBody Resource resource){
         return resourceService.addResource(resource);
     }
 
-    @GetMapping("/all") //Fetches all resources
+    @GetMapping //Fetches all resources
     public ResponseEntity<List<Resource>> getAllResources(){
         return resourceService.getAllResource();
     }
 
-    @PutMapping("/edit/{resourceId}")
+    @PutMapping("/{resourceId}")
     public ResponseEntity<String> editResource(Long resourceId, @RequestBody Resource updatedResource){
         return resourceService.editResource(resourceId, updatedResource);
     }
-    @DeleteMapping("/delete/{resourceId}")
+
+    @DeleteMapping("/{resourceId}")
     public ResponseEntity<String> deleteResource(Long resourceId){
         return resourceService.deleteResource(resourceId);
     }
