@@ -13,7 +13,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.web.multipart.MultipartFile;
 
 
 @RequestMapping("/users")
@@ -43,9 +43,9 @@ public class UserController {
     }
 
     @PutMapping("/account")//User updates their user profile or account
-    public ResponseEntity<String> updateMyProfile(@AuthenticationPrincipal UserDetails userDetails, @RequestBody User updatedUser) {
+    public ResponseEntity<String> updateMyProfile(MultipartFile multipartFile, @AuthenticationPrincipal UserDetails userDetails, @RequestBody User updatedUser) {
         Long userId = getUserIdFromUserDetails(userDetails);
-        return userService.updateProfile(userId, updatedUser);
+        return userService.updateProfile(multipartFile, userId, updatedUser);
     }
 
     private Long getUserIdFromUserDetails(UserDetails userDetails) {

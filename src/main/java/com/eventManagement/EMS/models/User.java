@@ -40,6 +40,7 @@ public class User {
     private String course;
     private String department;
 
+    private String imagePath;
     @Column(name = "created_at")
     private String createdAt;
 
@@ -68,6 +69,7 @@ public class User {
                 String year,
                 String course,
                 String department,
+                String imagePath,
                 List<Event> organizedEvents,
                 List<Venue> managedVenues,
                 String createdAt,
@@ -178,6 +180,14 @@ public class User {
 
     public void setDepartment(String department) {
         this.department = department;
+    }
+
+    public String getImagePath() {
+        return imagePath;
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
     }
 
     public String getCreatedAt() {

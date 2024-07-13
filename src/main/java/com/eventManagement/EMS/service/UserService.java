@@ -16,6 +16,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -108,7 +112,7 @@ public class UserService {
     }
 
     //Profile Management for users
-    public ResponseEntity<String> updateProfile(Long userId, User updatedUser) {
+    public ResponseEntity<String> updateProfile(MultipartFile imageFile, Long userId, User updatedUser) {
         Optional<User> userOptional = userRepository.findById(userId);
 
         if (userOptional.isPresent()) {
@@ -129,7 +133,18 @@ public class UserService {
             if (updatedUser.getPassword() != null && !updatedUser.getPassword().equals(" ")) {
                 existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
             }
-
+            if(!imageFile.isEmpty()){
+                try{
+                    String fileName = imageFile.getOriginalFilename();
+                    String uploadDir = "user-images/";
+                    String filePath = uploadDir + fileName;
+                    File file = new File(filePath);
+                    imageFile.transferTo(file);
+                    existingUser.setImagePath(filePath);
+                }catch (IOException e){
+                    return new ResponseEntity<>("Failed to upload image", HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+            }
             existingUser.setUpdatedAt(LocalDateTime.now().format(DateTimeFormatter.ofPattern("E MMM dd yyyy")));
             userRepository.save(existingUser);
             String message = "Your profile has been updated!";
