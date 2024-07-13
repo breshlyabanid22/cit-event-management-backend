@@ -24,8 +24,6 @@ public class Event {
 
     private LocalDateTime endTime;
 
-    private int capacity;
-
     @ManyToOne
     @JoinColumn(name = "venue_id")
     private Venue venue;
@@ -50,13 +48,12 @@ public class Event {
     public Event() {
     }
 
-    public Event(Long id, String name, String description, LocalDateTime startTime, LocalDateTime endTime, int capacity, Venue venue, User organizer, String status, String createdAt, List<Feedback> feedback, List<Resource> resources, String updatedAt, String imagePath) {
+    public Event(Long id, String name, String description, LocalDateTime startTime, LocalDateTime endTime, Venue venue, User organizer, String status, String createdAt, List<Feedback> feedback, List<Resource> resources, String updatedAt, String imagePath) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.startTime = startTime;
         this.endTime = endTime;
-        this.capacity = capacity;
         this.venue = venue;
         this.organizer = organizer;
         this.status = status;
@@ -157,14 +154,6 @@ public class Event {
 
     public void setResources(List<Resource> resources) {
         this.resources = resources;
-    }
-
-    public int getCapacity() {
-        return capacity;
-    }
-
-    public void setCapacity(int capacity) {
-        this.capacity = capacity;
     }
 
     public String getImagePath() {

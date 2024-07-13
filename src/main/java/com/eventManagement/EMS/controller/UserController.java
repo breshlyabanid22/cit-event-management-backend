@@ -2,14 +2,12 @@ package com.eventManagement.EMS.controller;
 
 import com.eventManagement.EMS.config.UserInfoDetails;
 import com.eventManagement.EMS.models.User;
-import com.eventManagement.EMS.repository.UserRepository;
 import com.eventManagement.EMS.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;

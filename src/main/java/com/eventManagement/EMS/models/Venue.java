@@ -18,8 +18,8 @@ public class Venue {
 
     private int maxCapacity;
 
-    @OneToMany(mappedBy = "venue")
-    private List<Event> events;
+//    @OneToMany(mappedBy = "venue")
+//    private List<Event> events;
 
     @ManyToMany
     @JoinTable(
@@ -36,7 +36,7 @@ public class Venue {
         this.name = name;
         this.location = location;
         this.maxCapacity = maxCapacity;
-        this.events = events;
+//        this.events = events;
         this.venueManagers = venueManagers;
     }
 
@@ -72,13 +72,13 @@ public class Venue {
         this.maxCapacity = maxCapacity;
     }
 
-    public List<Event> getEvents() {
-        return events;
-    }
-
-    public void setEvents(List<Event> events) {
-        this.events = events;
-    }
+//    public List<Event> getEvents() {
+//        return events;
+//    }
+//
+//    public void setEvents(List<Event> events) {
+//        this.events = events;
+//    }
 
     public List<User> getVenueManagers() {
         return venueManagers;

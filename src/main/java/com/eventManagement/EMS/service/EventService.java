@@ -39,7 +39,7 @@ public class EventService {
 
     public ResponseEntity<String> createEvent(EventDTO eventDTO, MultipartFile imageFile, User user){
         Optional<Venue> eventVenueOpt = venueRepository.findById(eventDTO.getVenueId());
-        if(eventDTO.getName() == null || eventDTO.getStartTime() == null || eventDTO.getEndTime() == null || eventDTO.getCapacity() <= 0){
+        if(eventDTO.getName() == null || eventDTO.getStartTime() == null || eventDTO.getEndTime() == null){
             return new ResponseEntity<>("Invalid event data", HttpStatus.BAD_REQUEST);
         }
         if(eventVenueOpt.isEmpty()){
@@ -70,7 +70,6 @@ public class EventService {
         event.setVenue(eventVenue);
         event.setName(eventDTO.getName());
         event.setDescription(eventDTO.getDescription());
-        event.setCapacity(eventDTO.getCapacity());
         event.setStartTime(eventDTO.getStartTime());
         event.setEndTime(eventDTO.getEndTime());
         event.setStatus("Pending");
@@ -120,7 +119,7 @@ public class EventService {
         return eventOpt.map(event -> new ResponseEntity<>(event, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    public ResponseEntity<String> updateEvent(Long eventId, EventDTO updatedEventDTO, User user){
+    public ResponseEntity<String> updateEvent(Long eventId, MultipartFile imageFile, EventDTO updatedEventDTO, User user){
         Optional<Event> existingEventOpt = eventRepository.findById(eventId);
         Optional<Venue> venueEventOpt = venueRepository.findById(updatedEventDTO.getVenueId());
 
@@ -135,7 +134,18 @@ public class EventService {
                         updatedEventDTO.getStartTime(),
                         updatedEventDTO.getEndTime()
                 );
-
+                if(!imageFile.isEmpty()){
+                    try {
+                        String fileName = imageFile.getOriginalFilename();
+                        String uploadDir = "event-images/";
+                        String filePath = uploadDir + fileName;
+                        File file = new File(filePath);
+                        imageFile.transferTo(file);
+                        eventDTO.setImagePath(filePath);
+                    }catch (IOException e){
+                        return new ResponseEntity<>("Failed to upload image", HttpStatus.INTERNAL_SERVER_ERROR);
+                    }
+                }
                 // Exclude the event being updated from conflict checks
                 conflictingEvents.removeIf(event -> event.getId().equals(eventId));
 
@@ -152,7 +162,6 @@ public class EventService {
                 //update the event details
                 existingEvent.setName(updatedEventDTO.getName() != null ? updatedEventDTO.getName() : existingEvent.getName());
                 existingEvent.setDescription(updatedEventDTO.getDescription() != null ? updatedEventDTO.getDescription() : existingEvent.getDescription());
-                existingEvent.setCapacity(updatedEventDTO.getCapacity() != existingEvent.getCapacity() ? updatedEventDTO.getCapacity() : existingEvent.getCapacity());
                 existingEvent.setStartTime(updatedEventDTO.getStartTime() != null ? updatedEventDTO.getStartTime() : existingEvent.getStartTime());
                 existingEvent.setEndTime(updatedEventDTO.getEndTime() != null ? updatedEventDTO.getEndTime() : existingEvent.getEndTime());
                 existingEvent.setStatus(updatedEventDTO.getStatus() != null ? updatedEventDTO.getStatus() : existingEvent.getStatus());

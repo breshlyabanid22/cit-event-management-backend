@@ -22,9 +22,6 @@ public class EventDTO {
     private LocalDateTime endTime;
 
     private String organizerDTO;
-
-    private int capacity;
-
     private List<Resource> resources;
 
     private String venueName;
@@ -105,13 +102,6 @@ public class EventDTO {
         this.endTime = endTime;
     }
 
-    public int getCapacity() {
-        return capacity;
-    }
-
-    public void setCapacity(int capacity) {
-        this.capacity = capacity;
-    }
 
     public Long getVenueId() {
         return venueId;

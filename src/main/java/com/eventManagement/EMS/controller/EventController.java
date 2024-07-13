@@ -66,9 +66,9 @@ public class EventController {
 
 
     @PutMapping("/{eventId}") //Update an event
-    public ResponseEntity<String> updateEvent(@PathVariable Long eventId, @RequestBody EventDTO updatedEventDTO, @AuthenticationPrincipal UserInfoDetails userDetails){
+    public ResponseEntity<String> updateEvent(@PathVariable Long eventId, MultipartFile imageFile, @RequestBody EventDTO updatedEventDTO, @AuthenticationPrincipal UserInfoDetails userDetails){
         User user = userDetails.getUser();
-        return eventService.updateEvent(eventId, updatedEventDTO, user);
+        return eventService.updateEvent(eventId, imageFile, updatedEventDTO, user);
     }
 
     @PutMapping("/approve/{eventId}")
