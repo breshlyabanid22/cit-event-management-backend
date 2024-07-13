@@ -1,6 +1,7 @@
 package com.eventManagement.EMS.controller;
 
 
+import com.eventManagement.EMS.DTO.ResourceDTO;
 import com.eventManagement.EMS.models.Resource;
 import com.eventManagement.EMS.service.ResourceService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,7 @@ public class ResourceController {
     }
 
     @GetMapping //Fetches all resources
-    public ResponseEntity<List<Resource>> getAllResources(){
+    public ResponseEntity<List<ResourceDTO>> getAllResources(){
         return resourceService.getAllResource();
     }
 

@@ -1,6 +1,7 @@
 package com.eventManagement.EMS.service;
 
 
+import com.eventManagement.EMS.DTO.ResourceDTO;
 import com.eventManagement.EMS.models.Resource;
 import com.eventManagement.EMS.repository.ResourceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,15 +31,26 @@ public class ResourceService {
             return new ResponseEntity<>("Resource not found", HttpStatus.NOT_FOUND);
         }
         Resource existingResource = resourceOptional.get();
-        existingResource.setAvailability(updatedResource.getAvailability() != null ? updatedResource.getAvailability() : existingResource.getAvailability());
+        existingResource.setAvailability(updatedResource.getAvailability() ? updatedResource.getAvailability() : existingResource.getAvailability());
         existingResource.setDescription(updatedResource.getDescription() != null ? updatedResource.getDescription() : existingResource.getDescription());
         existingResource.setName(updatedResource.getName() != null ? updatedResource.getName() : existingResource.getName());
         existingResource.setType(updatedResource.getType() != null ? updatedResource.getType() : existingResource.getType());
         return new ResponseEntity<>("Resource has been updated", HttpStatus.OK);
     }
-    public ResponseEntity<List<Resource>> getAllResource(){
+    public ResponseEntity<List<ResourceDTO>> getAllResource(){
         List<Resource> resources = resourceRepository.findAll();
-        return new ResponseEntity<>(resources, HttpStatus.OK);
+        List<ResourceDTO> resourceDTOList = new ArrayList<>();
+        for(Resource resource : resources){
+            ResourceDTO resourceDTO = new ResourceDTO();
+            resourceDTO.setName(resource.getName());
+            resourceDTO.setId(resource.getId());
+            resourceDTO.setDescription(resource.getDescription());
+            resourceDTO.setType(resource.getType());
+            resourceDTO.setAvailability(resource.getAvailability());
+            resourceDTO.setEvent(resource.getEventResource().getName());
+            resourceDTOList.add(resourceDTO);
+        }
+        return new ResponseEntity<>(resourceDTOList, HttpStatus.OK);
     }
     public ResponseEntity<String> deleteResource(Long resourceId){
         Optional<Resource> resourceOptional = resourceRepository.findById(resourceId);

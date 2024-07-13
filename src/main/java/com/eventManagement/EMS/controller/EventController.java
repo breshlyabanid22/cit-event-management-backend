@@ -36,9 +36,9 @@ public class EventController {
         return eventService.createEvent(eventDTO, imageFile, user);
     }
 
-    @GetMapping("/venue/{venueId}") //Fetch an event by Venue
+    @GetMapping("/venue/{venueId}") //Fetch an event by Venue. Display this in a venue managers dashboard
     @PreAuthorize("hasAuthority('VENUE_MANAGER') || hasAuthority('ADMIN')") //Only accessible by venue_managers or admin
-    public ResponseEntity<List<Event>> getAllEventsByVenue(
+    public ResponseEntity<List<EventDTO>> getAllEventsByVenue(
             @PathVariable Long venueId,
             @AuthenticationPrincipal UserInfoDetails userDetails){
         User user = userDetails.getUser();
@@ -47,20 +47,20 @@ public class EventController {
 
 
     @GetMapping // Get all events
-    @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<List<Event>> getAllEvents(){
+    @PreAuthorize("hasAuthority('ADMIN')")//Fetches all events regardless of status
+    public ResponseEntity<List<EventDTO>> getAllEvents(){
         return eventService.getAllEvents();
     }
 
     @GetMapping("/{eventId}") //Single event details
-    public ResponseEntity<Event> getEventById(@PathVariable Long eventId){
+    public ResponseEntity<EventDTO> getEventById(@PathVariable Long eventId){
         return eventService.getEventById(eventId);
     }
 
 
 
-    @GetMapping("/approved") //fetches all approved events.These events are displayed in the page and browsed by user
-    public ResponseEntity<List<Event>> getAllApproveEvents(){
+    @GetMapping("/approved") //Fetches all approved events.These events are displayed in the page and browsed by user
+    public ResponseEntity<List<EventDTO>> getAllApproveEvents(){
         return eventService.getAllApprovedEvents();
     }
 
@@ -80,6 +80,7 @@ public class EventController {
         User user = userInfoDetails.getUser();
         return eventService.approveEvent(eventId, user);
     }
+
     @PutMapping("/reject/{eventId}")
     @PreAuthorize("hasAuthority('VENUE_MANAGER') || hasAuthority('ADMIN')")
     public ResponseEntity<String> rejectEventProposal(@PathVariable Long eventId, @AuthenticationPrincipal UserInfoDetails userInfoDetails){

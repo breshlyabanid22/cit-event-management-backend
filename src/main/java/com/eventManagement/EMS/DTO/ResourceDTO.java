@@ -1,13 +1,8 @@
-package com.eventManagement.EMS.models;
+package com.eventManagement.EMS.DTO;
 
 
-import jakarta.persistence.*;
+public class ResourceDTO {
 
-@Entity
-public class Resource {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
@@ -18,21 +13,7 @@ public class Resource {
 
     private boolean availability;
 
-    @ManyToOne
-    @JoinColumn(name = "eventId")
-    private Event eventResource;
-
-    public Resource() {
-    }
-
-    public Resource(Long id, String name, String description, String type, boolean availability, Event eventResource) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.type = type;
-        this.availability = availability;
-        this.eventResource = eventResource;
-    }
+    private String event;
 
     public Long getId() {
         return id;
@@ -66,7 +47,7 @@ public class Resource {
         this.type = type;
     }
 
-    public boolean getAvailability() {
+    public boolean isAvailability() {
         return availability;
     }
 
@@ -74,12 +55,11 @@ public class Resource {
         this.availability = availability;
     }
 
-
-    public Event getEventResource() {
-        return eventResource;
+    public String getEvent() {
+        return event;
     }
 
-    public void setEventResource(Event eventResource) {
-        this.eventResource = eventResource;
+    public void setEvent(String event) {
+        this.event = event;
     }
 }

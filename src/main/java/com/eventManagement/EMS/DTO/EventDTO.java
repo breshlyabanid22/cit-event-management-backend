@@ -21,8 +21,10 @@ public class EventDTO {
 
     private LocalDateTime endTime;
 
-    private String organizerDTO;
+    private String organizer;
     private List<Resource> resources;
+
+    private List<String> resourceName;
 
     private String venueName;
     private Long venueId;
@@ -42,12 +44,12 @@ public class EventDTO {
         this.venueName = venueName;
     }
 
-    public String getOrganizerDTO() {
-        return organizerDTO;
+    public String getOrganizer() {
+        return organizer;
     }
 
-    public void setOrganizerDTO(String organizerDTO) {
-        this.organizerDTO = organizerDTO;
+    public void setOrganizer(String organizer) {
+        this.organizer = organizer;
     }
 
     public List<Resource> getResources() {
@@ -102,6 +104,13 @@ public class EventDTO {
         this.endTime = endTime;
     }
 
+    public List<String> getResourceName() {
+        return resourceName;
+    }
+
+    public void setResourceName(List<String> resourceName) {
+        this.resourceName = resourceName;
+    }
 
     public Long getVenueId() {
         return venueId;

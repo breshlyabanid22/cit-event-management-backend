@@ -1,10 +1,7 @@
 package com.eventManagement.EMS.service;
 
 import com.eventManagement.EMS.DTO.EventDTO;
-import com.eventManagement.EMS.models.Event;
-import com.eventManagement.EMS.models.EventRegistration;
-import com.eventManagement.EMS.models.User;
-import com.eventManagement.EMS.models.Venue;
+import com.eventManagement.EMS.models.*;
 import com.eventManagement.EMS.repository.EventRegistrationRepository;
 import com.eventManagement.EMS.repository.EventRepository;
 import com.eventManagement.EMS.repository.VenueRepository;
@@ -81,31 +78,75 @@ public class EventService {
         return new ResponseEntity<>("Event created successfully", HttpStatus.CREATED);
     }
 
-    public ResponseEntity<List<Event>> getAllEventsByVenue(Long venueId, User user) {
+    public ResponseEntity<List<EventDTO>> getAllEventsByVenue(Long venueId, User user) {
         // Check if user is a venue manager or admin
         if (user.getRole().equals("VENUE_MANAGER") || user.getRole().equals("ADMIN")) {
             // Check if user is assigned to the venue or is an admin
             if (user.getRole().equals("ADMIN") || user.getManagedVenues().stream().anyMatch(v -> v.getId().equals(venueId))) {
                 List<Event> events = eventRepository.findByVenueId(venueId);
-                return new ResponseEntity<>(events, HttpStatus.OK);
+                List<EventDTO> eventDTOList = new ArrayList<>();
+                for(Event event : events){
+                    EventDTO eventDTO = new EventDTO();
+                    eventDTO.setId(event.getId());
+                    eventDTO.setName(event.getName());
+                    eventDTO.setDescription(event.getDescription());
+                    eventDTO.setStartTime(event.getStartTime());
+                    eventDTO.setEndTime(event.getEndTime());
+                    eventDTO.setVenueName(event.getVenue().getName());
+                    eventDTO.setOrganizer(event.getOrganizer().getUsername());
+                    eventDTO.setImagePath(event.getImagePath());
+                    eventDTO.setStatus(event.getStatus());
+                    eventDTO.setResourceName(event.getResources().stream().map(Resource::getName).toList());
+                    eventDTO.setVenueId(event.getVenue().getId());
+                    eventDTOList.add(eventDTO);
+                }
+                return new ResponseEntity<>(eventDTOList, HttpStatus.OK);
             }
         }
         return new ResponseEntity<>(HttpStatus.FORBIDDEN);
     }
 
-    public ResponseEntity<List<Event>> getAllEvents(){
-        List<Event> allEvents = eventRepository.findAll();
-        return new ResponseEntity<>(allEvents, HttpStatus.OK);
+    public ResponseEntity<List<EventDTO>> getAllEvents(){
+        List<Event> events = eventRepository.findAll();
+        List<EventDTO> eventDTOList = new ArrayList<>();
+        for(Event event : events){
+            EventDTO eventDTO = new EventDTO();
+            eventDTO.setId(event.getId());
+            eventDTO.setName(event.getName());
+            eventDTO.setDescription(event.getDescription());
+            eventDTO.setStartTime(event.getStartTime());
+            eventDTO.setEndTime(event.getEndTime());
+            eventDTO.setVenueName(event.getVenue().getName());
+            eventDTO.setOrganizer(event.getOrganizer().getUsername());
+            eventDTO.setImagePath(event.getImagePath());
+            eventDTO.setStatus(event.getStatus());
+            eventDTO.setResourceName(event.getResources().stream().map(Resource::getName).toList());
+            eventDTO.setVenueId(event.getVenue().getId());
+            eventDTOList.add(eventDTO);
+        }
+        return new ResponseEntity<>(eventDTOList, HttpStatus.OK);
     }
 
-    public ResponseEntity<List<Event>> getAllApprovedEvents() {
+    public ResponseEntity<List<EventDTO>> getAllApprovedEvents() {
         List<Event> events = eventRepository.findAll();
 
         if (!events.isEmpty()) {
-            List<Event> approvedEvents = new ArrayList<>();
+            List<EventDTO> approvedEvents = new ArrayList<>();
             for (Event event : events) {
+                EventDTO eventDTO = new EventDTO();
                 if (event.getStatus().equals("Approved")) {
-                    approvedEvents.add(event);
+                    eventDTO.setId(event.getId());
+                    eventDTO.setName(event.getName());
+                    eventDTO.setDescription(event.getDescription());
+                    eventDTO.setStartTime(event.getStartTime());
+                    eventDTO.setEndTime(event.getEndTime());
+                    eventDTO.setVenueName(event.getVenue().getName());
+                    eventDTO.setOrganizer(event.getOrganizer().getUsername());
+                    eventDTO.setImagePath(event.getImagePath());
+                    eventDTO.setStatus(event.getStatus());
+                    eventDTO.setResourceName(event.getResources().stream().map(Resource::getName).toList());
+                    eventDTO.setVenueId(event.getVenue().getId());
+                    approvedEvents.add(eventDTO);
                 }
             }
             return new ResponseEntity<>(approvedEvents, HttpStatus.OK);
@@ -113,10 +154,25 @@ public class EventService {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    public ResponseEntity<Event> getEventById(Long eventId){
+    public ResponseEntity<EventDTO> getEventById(Long eventId){
         Optional <Event> eventOpt = eventRepository.findById(eventId);
-
-        return eventOpt.map(event -> new ResponseEntity<>(event, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+        if(eventOpt.isEmpty()){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        Event event = eventOpt.get();
+        EventDTO eventDTO = new EventDTO();
+        eventDTO.setId(event.getId());
+        eventDTO.setName(event.getName());
+        eventDTO.setDescription(event.getDescription());
+        eventDTO.setStartTime(event.getStartTime());
+        eventDTO.setEndTime(event.getEndTime());
+        eventDTO.setVenueName(event.getVenue().getName());
+        eventDTO.setOrganizer(event.getOrganizer().getUsername());
+        eventDTO.setImagePath(event.getImagePath());
+        eventDTO.setStatus(event.getStatus());
+        eventDTO.setResourceName(event.getResources().stream().map(Resource::getName).toList());
+        eventDTO.setVenueId(event.getVenue().getId());
+        return new ResponseEntity<>(eventDTO, HttpStatus.OK);
     }
 
     public ResponseEntity<String> updateEvent(Long eventId, MultipartFile imageFile, EventDTO updatedEventDTO, User user){

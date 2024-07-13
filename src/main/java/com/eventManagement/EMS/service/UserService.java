@@ -176,12 +176,28 @@ public class UserService {
         }
     }
 
-    public ResponseEntity<User> getCurrentUser(Long userId){
+    public ResponseEntity<UserDTO> getCurrentUser(Long userId){
         Optional<User> userOptional = userRepository.findById(userId);
 
         if(userOptional.isPresent()){
             User user = userOptional.get();
-            return new ResponseEntity<>(user, HttpStatus.OK);
+            UserDTO userDTO = new UserDTO();
+            userDTO.setUserID(user.getUserID());
+            userDTO.setUsername(user.getUsername());
+            userDTO.setPassword(user.getPassword());
+            userDTO.setFirstName(user.getFirstName());
+            userDTO.setLastName(user.getLastName());
+            userDTO.setRole(user.getRole());
+            userDTO.setUserType(user.getUserType());
+            userDTO.setEmail(user.getEmail());
+            userDTO.setCourse(user.getCourse());
+            userDTO.setDepartment(user.getDepartment());
+            userDTO.setSchoolID(user.getSchoolID());
+            userDTO.setActive(user.isActive());
+            userDTO.setCreatedAt(user.getCreatedAt());
+            userDTO.setUpdatedAt(user.getUpdatedAt());
+            userDTO.setYear(user.getYear());
+            return new ResponseEntity<>(userDTO, HttpStatus.OK);
         }else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }

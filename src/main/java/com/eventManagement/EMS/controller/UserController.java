@@ -54,7 +54,11 @@ public class UserController {
         }
         throw new IllegalArgumentException("Invalid user details");
     }
-
+    @GetMapping("/{userId}")
+    public ResponseEntity<UserDTO> getCurrentUser(@PathVariable Long userId, @AuthenticationPrincipal UserInfoDetails userInfoDetails){
+        User user = userInfoDetails.getUser();
+        return userService.getCurrentUser(userId);
+    }
 
     @DeleteMapping("/account/deactivate")
     public ResponseEntity<String> deactivateMyAccount(@AuthenticationPrincipal UserInfoDetails userInfoDetails){
