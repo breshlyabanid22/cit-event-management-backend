@@ -141,7 +141,7 @@ public class EventService {
                         String filePath = uploadDir + fileName;
                         File file = new File(filePath);
                         imageFile.transferTo(file);
-                        eventDTO.setImagePath(filePath);
+                        updatedEventDTO.setImagePath(filePath);
                     }catch (IOException e){
                         return new ResponseEntity<>("Failed to upload image", HttpStatus.INTERNAL_SERVER_ERROR);
                     }
