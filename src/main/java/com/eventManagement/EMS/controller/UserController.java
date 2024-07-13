@@ -24,10 +24,10 @@ public class UserController {
     @Autowired
     UserService userService;
 
-    @PostMapping
+    @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody User user){
         if(user.getRole() == null){
-            user.setRole("USER");
+            user.setRole("PARTICIPANT");
         }
         return  userService.register(user);
     }
