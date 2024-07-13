@@ -66,7 +66,10 @@ public class UserService {
         return new ResponseEntity<>("User Registered Successfully", HttpStatus.CREATED);
     }
 
-    public ResponseEntity<String> login(String username, String password, HttpServletRequest request) {
+    public ResponseEntity<User> login(String username, String password, HttpServletRequest request) {
+        Optional<User> userOptional = userRepository.findByUsername(username);
+
+        User user = userOptional.get();
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(username, password));
@@ -76,12 +79,12 @@ public class UserService {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
                 HttpSession session = request.getSession(true); // true to create a new session if it doesn't exist
                 session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, SecurityContextHolder.getContext());
-                return new ResponseEntity<>("Login Successful", HttpStatus.OK);
+                return new ResponseEntity<>(user, HttpStatus.OK);
             } else {
-                return new ResponseEntity<>("Invalid username or password", HttpStatus.UNAUTHORIZED);
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
         } catch (Exception e) {
-            return new ResponseEntity<>("Invalid username or password", HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
     }
 

@@ -31,7 +31,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody User user, HttpServletRequest request){
+    public ResponseEntity<User> login(@RequestBody User user, HttpServletRequest request){
         return userService.login(user.getUsername(), user.getPassword(), request);
     }
 
