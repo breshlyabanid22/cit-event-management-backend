@@ -1,5 +1,6 @@
 package com.eventManagement.EMS.controller;
 
+import com.eventManagement.EMS.DTO.EventRegistrationDTO;
 import com.eventManagement.EMS.config.UserInfoDetails;
 import com.eventManagement.EMS.models.EventRegistration;
 import com.eventManagement.EMS.models.User;
@@ -34,13 +35,13 @@ public class EventRegistrationController {
 
     @GetMapping//Retrieves all
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<List<EventRegistration>> getAllEventRegistrations(){
+    public ResponseEntity<List<EventRegistrationDTO>> getAllEventRegistrations(){
         return eventRegistrationService.getAllEventRegistrations();
     }
 
     @GetMapping("/registered/{eventId}")
     @PreAuthorize("hasAuthority('ORGANIZER')") //Display this in an organizers dashboard
-    public ResponseEntity<List<EventRegistration>> getAllRegisteredUsersToMyEvent(@PathVariable Long eventId, @AuthenticationPrincipal UserInfoDetails userInfoDetails){
+    public ResponseEntity<List<EventRegistrationDTO>> getAllRegisteredUsersToMyEvent(@PathVariable Long eventId, @AuthenticationPrincipal UserInfoDetails userInfoDetails){
         User user = userInfoDetails.getUser();
         return eventRegistrationService.getAllRegisteredUsersToMyEvent(eventId, user);
     }
@@ -67,7 +68,7 @@ public class EventRegistrationController {
 
     @GetMapping("/accepted")//Displays all accepted users' event registrations
     @PreAuthorize("hasAuthority('ORGANIZER') || hasAuthority('ADMIN')")
-    public ResponseEntity<List<EventRegistration>> getAllAcceptedRequest(){
+    public ResponseEntity<List<EventRegistrationDTO>> getAllAcceptedRequest(){
         return eventRegistrationService.getAllAcceptedRequest();
     }
 }

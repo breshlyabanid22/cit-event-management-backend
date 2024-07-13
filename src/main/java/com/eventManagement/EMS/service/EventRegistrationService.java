@@ -1,5 +1,6 @@
 package com.eventManagement.EMS.service;
 
+import com.eventManagement.EMS.DTO.EventRegistrationDTO;
 import com.eventManagement.EMS.models.Event;
 import com.eventManagement.EMS.models.EventRegistration;
 import com.eventManagement.EMS.models.User;
@@ -80,17 +81,31 @@ public class EventRegistrationService {
         return new ResponseEntity<>("Registration not found", HttpStatus.NOT_FOUND);
     }
 
-    //Displays all users that are registered to a specific event
-    public ResponseEntity<List<EventRegistration>> getAllEventRegistrations(){
+    //Displays all users that are registered to an event
+    public ResponseEntity<List<EventRegistrationDTO>> getAllEventRegistrations(){
         List<EventRegistration> registrations = eventRegistrationRepository.findAll();
         if(registrations.isEmpty()){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(registrations, HttpStatus.OK);
+        List<EventRegistrationDTO> eventRegistrationDTOList = new ArrayList<>();
+        for(EventRegistration eventRegistration : registrations){
+            EventRegistrationDTO eventRegistrationDTO = new EventRegistrationDTO();
+            eventRegistrationDTO.setEventName(eventRegistration.getEvent().getName());
+            eventRegistrationDTO.setId(eventRegistration.getId());
+            eventRegistrationDTO.setEventId(eventRegistration.getEvent().getId());
+            eventRegistrationDTO.setUsername(eventRegistration.getUser().getUsername());
+            String fullName = eventRegistration.getUser().getFirstName() + " " + eventRegistration.getUser().getLastName();
+            eventRegistrationDTO.setFullName(fullName);
+            eventRegistrationDTO.setUserId(eventRegistration.getUser().getUserID());
+            eventRegistrationDTO.setStatus(eventRegistration.getStatus());
+            eventRegistrationDTO.setRegisteredAt(eventRegistration.getRegisteredAt());
+            eventRegistrationDTOList.add(eventRegistrationDTO);
+        }
+        return new ResponseEntity<>(eventRegistrationDTOList, HttpStatus.OK);
     }
 
     //This is accessed by organizers, so they can view the list of users who registered to the event
-    public ResponseEntity<List<EventRegistration>> getAllRegisteredUsersToMyEvent(Long eventId, User user){
+    public ResponseEntity<List<EventRegistrationDTO>> getAllRegisteredUsersToMyEvent(Long eventId, User user){
         Optional<User> userOptional = userRepository.findById(user.getUserID());
         Optional<Event> eventOptional = eventRepository.findById(eventId);
         List<EventRegistration> registrations = eventRegistrationRepository.findByEventId(eventId);
@@ -101,7 +116,20 @@ public class EventRegistrationService {
         User user1 = userOptional.get();
         Event event = eventOptional.get();
         if(user1.getRole().equals("ORGANIZER") && event.getOrganizer().getUserID().equals(user1.getUserID())){
-            return new ResponseEntity<>(registrations, HttpStatus.OK);
+            List<EventRegistrationDTO> eventRegistrationDTOList = new ArrayList<>();
+            for(EventRegistration registration : registrations){
+                EventRegistrationDTO eventRegistrationDTO = new EventRegistrationDTO();
+                eventRegistrationDTO.setId(registration.getId());
+                eventRegistrationDTO.setUserId(registration.getUser().getUserID());
+                eventRegistrationDTO.setUsername(registration.getUser().getUsername());
+                eventRegistrationDTO.setFullName(registration.getUser().getFirstName() + " " + registration.getUser().getLastName());
+                eventRegistrationDTO.setEventId(registration.getEvent().getId());
+                eventRegistrationDTO.setEventName(registration.getEvent().getName());
+                eventRegistrationDTO.setStatus(registration.getStatus());
+                eventRegistrationDTO.setRegisteredAt(registration.getRegisteredAt());
+                eventRegistrationDTOList.add(eventRegistrationDTO);
+            }
+            return new ResponseEntity<>(eventRegistrationDTOList, HttpStatus.OK);
         }else{
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
@@ -141,13 +169,23 @@ public class EventRegistrationService {
         return new ResponseEntity<>("User is not an organizer to this event", HttpStatus.NOT_FOUND);
     }
 
-    public ResponseEntity<List<EventRegistration>> getAllAcceptedRequest(){
+    //Displays all the accepted join requests
+    public ResponseEntity<List<EventRegistrationDTO>> getAllAcceptedRequest(){
         List<EventRegistration> registrations = eventRegistrationRepository.findAll();
 
-        List<EventRegistration> acceptedRegistrations = new ArrayList<>();
+        List<EventRegistrationDTO> acceptedRegistrations = new ArrayList<>();
         for(EventRegistration registration : registrations){
+            EventRegistrationDTO eventRegistrationDTO = new EventRegistrationDTO();
             if(registration.getStatus().equals("Accepted")){
-                acceptedRegistrations.add(registration);
+                eventRegistrationDTO.setId(registration.getId());
+                eventRegistrationDTO.setUserId(registration.getUser().getUserID());
+                eventRegistrationDTO.setUsername(registration.getUser().getUsername());
+                eventRegistrationDTO.setFullName(registration.getUser().getFirstName() + " " + registration.getUser().getLastName());
+                eventRegistrationDTO.setEventId(registration.getEvent().getId());
+                eventRegistrationDTO.setEventName(registration.getEvent().getName());
+                eventRegistrationDTO.setStatus(registration.getStatus());
+                eventRegistrationDTO.setRegisteredAt(registration.getRegisteredAt());
+                acceptedRegistrations.add(eventRegistrationDTO);
             }
         }
         return new ResponseEntity<>(acceptedRegistrations, HttpStatus.OK);
