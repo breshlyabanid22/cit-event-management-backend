@@ -1,5 +1,7 @@
 package com.eventManagement.EMS.service;
 
+import com.eventManagement.EMS.DTO.VenueDTO;
+import com.eventManagement.EMS.models.Event;
 import com.eventManagement.EMS.models.User;
 import com.eventManagement.EMS.models.Venue;
 import com.eventManagement.EMS.repository.UserRepository;
@@ -42,9 +44,21 @@ public class VenueService {
 
 
     }
-    public ResponseEntity<List<Venue>> getAll(){
+    public ResponseEntity<List<VenueDTO>> getAll(){
         List<Venue> venues = venueRepository.findAll();
-        return new ResponseEntity<>(venues, HttpStatus.OK);
+
+        List<VenueDTO> venueDTOList = new ArrayList<>();
+        for(Venue venue : venues){
+            VenueDTO venueDTO = new VenueDTO();
+            venueDTO.setId(venue.getId());
+            venueDTO.setLocation(venue.getLocation());
+            venueDTO.setMaxCapacity(venue.getMaxCapacity());
+            venueDTO.setVenueManagers(venue.getVenueManagers().stream().map(User::getFirstName).toList());
+            venueDTO.setEvents(venue.getEvents().stream().map(Event::getName).toList());
+            venueDTO.setName(venue.getName());
+            venueDTOList.add(venueDTO);
+        }
+        return new ResponseEntity<>(venueDTOList, HttpStatus.OK);
     }
     @Transactional
     public ResponseEntity<String> deleteVenue(Long venueId){

@@ -1,6 +1,7 @@
 package com.eventManagement.EMS.controller;
 
 
+import com.eventManagement.EMS.DTO.VenueDTO;
 import com.eventManagement.EMS.models.Venue;
 import com.eventManagement.EMS.service.VenueService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +35,7 @@ public class VenueController {
 
     //Gets all venues
     @GetMapping//This can be used when displaying all available venues
-    public ResponseEntity<List<Venue>> getAllVenues(){
+    public ResponseEntity<List<VenueDTO>> getAllVenues(){
         return venueService.getAll();
     }
 

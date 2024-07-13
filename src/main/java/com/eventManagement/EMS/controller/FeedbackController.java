@@ -1,5 +1,6 @@
 package com.eventManagement.EMS.controller;
 
+import com.eventManagement.EMS.DTO.FeedbackDTO;
 import com.eventManagement.EMS.config.UserInfoDetails;
 import com.eventManagement.EMS.models.Feedback;
 import com.eventManagement.EMS.models.User;
@@ -30,7 +31,7 @@ public class FeedbackController {
     }
 
     @GetMapping("/event/{eventId}") //Get all feedback of a specific event then display
-    public ResponseEntity<List<Feedback>> getAllEventFeedback(@PathVariable Long eventId, @AuthenticationPrincipal UserInfoDetails userInfoDetails){
+    public ResponseEntity<List<FeedbackDTO>> getAllEventFeedback(@PathVariable Long eventId, @AuthenticationPrincipal UserInfoDetails userInfoDetails){
         if(userInfoDetails == null){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
