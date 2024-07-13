@@ -1,6 +1,7 @@
 package com.eventManagement.EMS.service;
 
 
+import com.eventManagement.EMS.DTO.NotificationDTO;
 import com.eventManagement.EMS.models.Event;
 import com.eventManagement.EMS.models.Notification;
 import com.eventManagement.EMS.models.User;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -36,9 +38,20 @@ public class NotificationService {
         return notificationRepository.save(notification);
     }
 
-    public ResponseEntity<List<Notification>> getNotificationsByUser(User user){
+    public ResponseEntity<List<NotificationDTO>> getNotificationsByUser(User user){
         List<Notification> notifications = notificationRepository.findByRecipient(user);
-        return new ResponseEntity<>(notifications, HttpStatus.OK);
+        List<NotificationDTO> notificationList = new ArrayList<>();
+
+        for(Notification notification : notifications){
+            NotificationDTO notificationDTO = new NotificationDTO();
+            notificationDTO.setId(notification.getId());
+            notificationDTO.setRecipient(notification.getRecipient().getUsername());
+            notificationDTO.setMessage(notification.getMessage());
+            notificationDTO.setEvent(notification.getEvent().getName());
+            notificationDTO.setCreatedAt(notification.getCreatedAt());
+            notificationList.add(notificationDTO);
+        }
+        return new ResponseEntity<>(notificationList, HttpStatus.OK);
     }
 
     public void sendNotificationToUser(List<User> users, String message, Event event){

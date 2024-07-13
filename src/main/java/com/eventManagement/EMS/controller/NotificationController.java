@@ -1,8 +1,8 @@
 package com.eventManagement.EMS.controller;
 
 
+import com.eventManagement.EMS.DTO.NotificationDTO;
 import com.eventManagement.EMS.config.UserInfoDetails;
-import com.eventManagement.EMS.models.Notification;
 import com.eventManagement.EMS.models.User;
 import com.eventManagement.EMS.service.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +22,8 @@ public class NotificationController {
     NotificationService notificationService;
 
 
-    @GetMapping
-    public ResponseEntity<List<Notification>> getUserNotifications(@AuthenticationPrincipal UserInfoDetails userInfoDetails){
+    @GetMapping //Display all notifications of the user
+    public ResponseEntity<List<NotificationDTO>> getUserNotifications(@AuthenticationPrincipal UserInfoDetails userInfoDetails){
         User user = userInfoDetails.getUser();
         return notificationService.getNotificationsByUser(user);
     }
