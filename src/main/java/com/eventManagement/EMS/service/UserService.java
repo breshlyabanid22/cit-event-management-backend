@@ -1,5 +1,6 @@
 package com.eventManagement.EMS.service;
 
+import com.eventManagement.EMS.DTO.UserDTO;
 import com.eventManagement.EMS.models.User;
 import com.eventManagement.EMS.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
@@ -66,10 +67,28 @@ public class UserService {
         return new ResponseEntity<>("User Registered Successfully", HttpStatus.CREATED);
     }
 
-    public ResponseEntity<User> login(String username, String password, HttpServletRequest request) {
+    public ResponseEntity<UserDTO> login(String username, String password, HttpServletRequest request) {
         Optional<User> userOptional = userRepository.findByUsername(username);
+        if(userOptional.isEmpty()){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
 
         User user = userOptional.get();
+        UserDTO userDTO = new UserDTO();
+        userDTO.setUserID(user.getUserID());
+        userDTO.setUsername(user.getUsername());
+        userDTO.setPassword(user.getPassword());
+        userDTO.setCourse(user.getCourse());
+        userDTO.setFirstName(user.getFirstName());
+        userDTO.setLastName(user.getLastName());
+        userDTO.setUserType(user.getUserType());
+        userDTO.setRole(user.getRole());
+        userDTO.setEmail(user.getEmail());
+        userDTO.setActive(user.isActive());
+        userDTO.setYear(user.getYear());
+        userDTO.setDepartment(user.getDepartment());
+        userDTO.setCreatedAt(user.getCreatedAt());
+
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(username, password));
@@ -79,7 +98,7 @@ public class UserService {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
                 HttpSession session = request.getSession(true); // true to create a new session if it doesn't exist
                 session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, SecurityContextHolder.getContext());
-                return new ResponseEntity<>(user, HttpStatus.OK);
+                return new ResponseEntity<>(userDTO, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
@@ -95,7 +114,7 @@ public class UserService {
         if (userOptional.isPresent()) {
             User existingUser = userOptional.get();
 
-            if(updatedUser.getUsername() != null && updatedUser.getUsername() != " "){
+            if(updatedUser.getUsername() != null && !updatedUser.getUsername().equals(" ")){
                 //Checks if the updated username is equal to the existing data in the database
                 if(updatedUser.getUsername().equals(existingUser.getUsername())){
                     existingUser.setUsername(updatedUser.getUsername());
@@ -107,7 +126,7 @@ public class UserService {
             existingUser.setYear(updatedUser.getYear() != null ? updatedUser.getYear() : existingUser.getYear());
             existingUser.setCourse(updatedUser.getCourse() != null ? updatedUser.getCourse() : existingUser.getCourse());
             existingUser.setDepartment(updatedUser.getDepartment() != null ? updatedUser.getDepartment() : existingUser.getDepartment());
-            if (updatedUser.getPassword() != null && updatedUser.getPassword() != "") {
+            if (updatedUser.getPassword() != null && !updatedUser.getPassword().equals(" ")) {
                 existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
             }
 
@@ -127,7 +146,7 @@ public class UserService {
         if (userOptional.isPresent()) {
             User existingUser = userOptional.get();
 
-            if(updatedUser.getUsername() != null && updatedUser.getUsername() != " "){
+            if(updatedUser.getUsername() != null && !updatedUser.getUsername().equals(" ")){
                 //Checks if the updated username is equal to the existing data in the database
                 if(updatedUser.getUsername().equals(existingUser.getUsername())){
                     existingUser.setUsername(updatedUser.getUsername());

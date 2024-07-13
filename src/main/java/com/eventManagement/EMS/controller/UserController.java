@@ -1,5 +1,6 @@
 package com.eventManagement.EMS.controller;
 
+import com.eventManagement.EMS.DTO.UserDTO;
 import com.eventManagement.EMS.config.UserInfoDetails;
 import com.eventManagement.EMS.models.User;
 import com.eventManagement.EMS.service.UserService;
@@ -31,8 +32,8 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<User> login(@RequestBody User user, HttpServletRequest request){
-        return userService.login(user.getUsername(), user.getPassword(), request);
+    public ResponseEntity<UserDTO> login(@RequestBody UserDTO userDTO, HttpServletRequest request){
+        return userService.login(userDTO.getUsername(), userDTO.getPassword(), request);
     }
 
     @PostMapping("/logout")
