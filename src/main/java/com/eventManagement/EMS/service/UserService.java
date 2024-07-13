@@ -12,7 +12,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Service;
@@ -40,11 +39,6 @@ public class UserService {
 
     @Autowired
     NotificationService notificationService;
-
-    public User findByUsername(String username){
-        return userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with username " + username));
-    }
 
     public ResponseEntity<List<User>> getAllUsers(){
         List<User> users = userRepository.findAll();
@@ -217,7 +211,6 @@ public class UserService {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
-
     public ResponseEntity<String> deactivateAccount(User user){
         user.setActive(false);
         userRepository.save(user);
