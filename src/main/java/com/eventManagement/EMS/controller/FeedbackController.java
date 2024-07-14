@@ -22,12 +22,12 @@ public class FeedbackController {
     FeedbackService feedbackService;
 
     @PostMapping // Creates a new feedback
-    public ResponseEntity<String> createFeedback(@RequestBody Feedback feedback, @RequestParam Long eventId, @AuthenticationPrincipal UserInfoDetails userInfoDetails){
+    public ResponseEntity<String> createFeedback(@RequestBody FeedbackDTO feedbackDTO, @AuthenticationPrincipal UserInfoDetails userInfoDetails){
         if(userInfoDetails == null){
             return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
         }
         User user = userInfoDetails.getUser();
-        return feedbackService.createFeedback(feedback, eventId, user);
+        return feedbackService.createFeedback(feedbackDTO, user);
     }
 
     @GetMapping("/event/{eventId}") //Get all feedback of a specific event then display

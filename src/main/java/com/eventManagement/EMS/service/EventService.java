@@ -78,7 +78,7 @@ public class EventService {
         event.setCreatedAt(LocalDateTime.now().format(DateTimeFormatter.ofPattern("E, MMM dd yyyy")));
 
         List<Resource> resourceList = new ArrayList<>();
-        for(Long resourceId : eventDTO.getResources()){
+        for(Long resourceId : eventDTO.getResourceIDs()){
             if (resourceId == null) {
                 throw new IllegalArgumentException("Venue manager ID must not be null");
             }

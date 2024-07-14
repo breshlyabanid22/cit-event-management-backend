@@ -6,6 +6,14 @@ import jakarta.persistence.*;
 @Entity
 public class Feedback {
 
+//    {
+//        "rate": "",
+//        "comments": "",
+//        "eventId": 1 // event_id
+//        "userId": 1 // user_id
+//    }
+//
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

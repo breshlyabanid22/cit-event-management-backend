@@ -47,12 +47,11 @@ public class EventDTO {
     public void setOrganizer(String organizer) {
         this.organizer = organizer;
     }
-
-    public List<Long> getResources() {
+    public List<Long> getResourceIDs() {
         return resourceID;
     }
 
-    public void setResources(List<Long> resources) {
+    public void setResourceIDs(List<Long> resources) {
         this.resourceID = resourceID;
     }
 
