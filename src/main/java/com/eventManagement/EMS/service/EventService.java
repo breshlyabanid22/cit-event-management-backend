@@ -4,6 +4,7 @@ import com.eventManagement.EMS.DTO.EventDTO;
 import com.eventManagement.EMS.models.*;
 import com.eventManagement.EMS.repository.EventRegistrationRepository;
 import com.eventManagement.EMS.repository.EventRepository;
+import com.eventManagement.EMS.repository.ResourceRepository;
 import com.eventManagement.EMS.repository.VenueRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,7 +19,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class EventService {
@@ -28,6 +28,9 @@ public class EventService {
 
     @Autowired
     VenueRepository venueRepository;
+
+    @Autowired
+    ResourceRepository resourceRepository;
 
     @Autowired
     NotificationService notificationService;
@@ -73,7 +76,17 @@ public class EventService {
         event.setOrganizer(user);
         event.setImagePath(eventDTO.getImagePath());
         event.setCreatedAt(LocalDateTime.now().format(DateTimeFormatter.ofPattern("E, MMM dd yyyy")));
-        event.setResources(eventDTO.getResources());
+
+        List<Resource> resourceList = new ArrayList<>();
+        for(Long resourceId : eventDTO.getResources()){
+            if (resourceId == null) {
+                throw new IllegalArgumentException("Venue manager ID must not be null");
+            }
+            Resource resource = resourceRepository.findById(resourceId)
+                    .orElseThrow(() -> new IllegalArgumentException("Invalid resource Id" + resourceId));
+            resourceList.add(resource);
+            event.setResources(resourceList);
+        }
         eventRepository.save(event);
         return new ResponseEntity<>("Event created successfully", HttpStatus.CREATED);
     }
