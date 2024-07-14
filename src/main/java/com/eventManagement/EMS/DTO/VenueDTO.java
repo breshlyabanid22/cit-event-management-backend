@@ -14,8 +14,9 @@ public class VenueDTO {
 
     private List<String> events;
 
-
+    private List<Long> venueManagersID;
     private List<String> venueManagers = new ArrayList<>();
+
 
     public Long getId() {
         return id;
@@ -63,5 +64,13 @@ public class VenueDTO {
 
     public void setVenueManagers(List<String> venueManagers) {
         this.venueManagers = venueManagers;
+    }
+
+    public List<Long> getVenueManagersID() {
+        return venueManagersID;
+    }
+
+    public void setVenueManagersID(List<Long> venueManagersID) {
+        this.venueManagersID = venueManagersID;
     }
 }

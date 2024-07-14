@@ -25,25 +25,27 @@ public class VenueService {
     UserRepository userRepository;
 
 
-    public Venue addVenue(Venue venue) {
-        if (venue.getVenueManagers() == null) {
-            venue.setVenueManagers(new ArrayList<>());
-        }
+    public Venue addVenue(VenueDTO venueDTO) {
+        Venue venue = new Venue();
+        venue.setName(venueDTO.getName());
+        venue.setLocation(venueDTO.getLocation());
+        venue.setMaxCapacity(venueDTO.getMaxCapacity());
+
         List<User> managers = new ArrayList<>();
-        for (User manager : venue.getVenueManagers()) {
-            if (manager.getUserID() == null) {
+        for (Long managerId : venueDTO.getVenueManagersID()) {
+            if (managerId == null) {
                 throw new IllegalArgumentException("Venue manager ID must not be null");
             }
-            User foundManager = userRepository.findById(manager.getUserID())
-                    .orElseThrow(() -> new IllegalArgumentException("Invalid venue manager ID: " + manager.getUserID()));
+            User foundManager = userRepository.findById(managerId)
+                    .orElseThrow(() -> new IllegalArgumentException("Invalid venue manager ID: " + managerId));
             managers.add(foundManager);
             foundManager.setRole("VENUE_MANAGER");
         }
         venue.setVenueManagers(managers);
         return venueRepository.save(venue);
 
-
     }
+
     public ResponseEntity<List<VenueDTO>> getAll(){
         List<Venue> venues = venueRepository.findAll();
 

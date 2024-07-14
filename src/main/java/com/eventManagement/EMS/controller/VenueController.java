@@ -24,9 +24,9 @@ public class VenueController {
 
     @PostMapping
     @PreAuthorize("hasAuthority('ADMIN')") //Only admin users can add a venue
-    public ResponseEntity<Venue> addVenue(@RequestBody Venue venue) {
+    public ResponseEntity<Venue> addVenue(@RequestBody VenueDTO venueDTO) {
         try {
-            Venue savedVenue = venueService.addVenue(venue);
+            Venue savedVenue = venueService.addVenue(venueDTO);
             return new ResponseEntity<>(savedVenue, HttpStatus.CREATED);
             } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);

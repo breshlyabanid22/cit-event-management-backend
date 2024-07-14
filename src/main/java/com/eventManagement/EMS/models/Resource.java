@@ -6,6 +6,13 @@ import jakarta.persistence.*;
 @Entity
 public class Resource {
 
+
+//    {
+//        "name" : "",
+//        "description": "",
+//        "type": "",  //equipment, personel, room
+//        "availability": true,
+//    }
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
