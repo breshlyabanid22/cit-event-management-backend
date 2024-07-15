@@ -31,7 +31,7 @@ public class ResourceController {
     }
 
 
-    @PutMapping("/{resourceId}")
+    @PatchMapping("/{resourceId}")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<String> editResource(Long resourceId, @RequestBody Resource updatedResource){
         return resourceService.editResource(resourceId, updatedResource);

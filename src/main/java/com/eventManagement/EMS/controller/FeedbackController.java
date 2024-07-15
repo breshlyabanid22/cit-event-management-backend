@@ -38,7 +38,7 @@ public class FeedbackController {
         return feedbackService.getAllEventFeedback(eventId);
     }
 
-    @PutMapping("/{feedbackId}")
+    @PatchMapping("/{feedbackId}")
     public ResponseEntity<String> editFeedback(Long feedbackId, @RequestBody Feedback updatedFeedback, @AuthenticationPrincipal UserInfoDetails userInfoDetails){
         if(userInfoDetails == null){
             return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);

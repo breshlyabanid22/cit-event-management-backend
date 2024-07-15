@@ -52,6 +52,7 @@ public class EventController {
         return eventService.getAllEvents();
     }
 
+
     @GetMapping("/{eventId}") //Single event details
     public ResponseEntity<EventDTO> getEventById(@PathVariable Long eventId){
         return eventService.getEventById(eventId);
@@ -65,13 +66,13 @@ public class EventController {
     }
 
 
-    @PutMapping("/{eventId}") //Update an event
+    @PatchMapping("/{eventId}") //Update an event
     public ResponseEntity<String> updateEvent(@PathVariable Long eventId, MultipartFile imageFile, @RequestBody EventDTO updatedEventDTO, @AuthenticationPrincipal UserInfoDetails userDetails){
         User user = userDetails.getUser();
         return eventService.updateEvent(eventId, imageFile, updatedEventDTO, user);
     }
 
-    @PutMapping("/{eventId}/approve")
+    @PatchMapping("/{eventId}/approve")
     @PreAuthorize("hasAuthority('VENUE_MANAGER') || hasAuthority('ADMIN')") //An admin or venue_manager can approve the proposed event
     public ResponseEntity<String> approveEventProposal(@PathVariable Long eventId, @AuthenticationPrincipal UserInfoDetails userInfoDetails){
         if(userInfoDetails == null){
@@ -81,7 +82,7 @@ public class EventController {
         return eventService.approveEvent(eventId, user);
     }
 
-    @PutMapping("/{eventId}/reject")
+    @PatchMapping("/{eventId}/reject")
     @PreAuthorize("hasAuthority('VENUE_MANAGER') || hasAuthority('ADMIN')")
     public ResponseEntity<String> rejectEventProposal(@PathVariable Long eventId, @AuthenticationPrincipal UserInfoDetails userInfoDetails){
         if(userInfoDetails == null){

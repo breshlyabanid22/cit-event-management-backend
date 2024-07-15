@@ -28,7 +28,7 @@ public class EventRegistrationController {
         return eventRegistrationService.registerToEvent(eventId, userId);
     }
 
-    @DeleteMapping("/cancel/{eventId}")// When participants want to cancel the registration
+    @DeleteMapping("/{eventId}/cancel")// When participants want to cancel the registration
     public ResponseEntity<String> cancelRegistration(@PathVariable Long eventId, @RequestParam Long userId){
         return eventRegistrationService.cancelRegistration(eventId, userId);
     }
@@ -46,7 +46,7 @@ public class EventRegistrationController {
         return eventRegistrationService.getAllRegisteredUsersToMyEvent(eventId, user);
     }
 
-    @PutMapping("/{registrationId}/accept") // This accepts the user's event registration
+    @PatchMapping("/{registrationId}/accept") // This accepts the user's event registration
     @PreAuthorize("hasAuthority('ORGANIZER')")
     public ResponseEntity<String> acceptRegistrationRequest(@PathVariable Long registrationId, @AuthenticationPrincipal UserInfoDetails userInfoDetails){
         if(userInfoDetails == null){
@@ -56,7 +56,7 @@ public class EventRegistrationController {
         return eventRegistrationService.acceptRegistrationRequest(registrationId, user);
     }
 
-    @PutMapping("/{registrationId}/reject")// This rejects the user's event registration
+    @PatchMapping("/{registrationId}/reject")// This rejects the user's event registration
     @PreAuthorize("hasAuthority('ORGANIZER')")
     public ResponseEntity<String> declineRegistrationRequest(@PathVariable Long registrationId, @AuthenticationPrincipal UserInfoDetails userInfoDetails){
         if(userInfoDetails == null){
