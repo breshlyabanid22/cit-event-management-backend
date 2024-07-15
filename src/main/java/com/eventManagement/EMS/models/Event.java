@@ -11,15 +11,6 @@ import java.util.List;
 public class Event {
 
 
-//    {
-//        "name": "",
-//        "description": "",
-//        "startTime": "",
-//        "endTime": "",
-//        "venue": 1,  //venueId
-//        "organizer": 2, //userId
-//        "resources": [ 1, 2, 3] //An array of resourceId
-//    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

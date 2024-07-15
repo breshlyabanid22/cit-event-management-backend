@@ -6,6 +6,7 @@ import com.eventManagement.EMS.models.Resource;
 import com.eventManagement.EMS.service.ResourceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,6 +20,7 @@ public class ResourceController {
     ResourceService resourceService;
 
     @PostMapping //Add a resource
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<String> addResource(@RequestBody Resource resource){
         return resourceService.addResource(resource);
     }
@@ -28,12 +30,15 @@ public class ResourceController {
         return resourceService.getAllResource();
     }
 
+
     @PutMapping("/{resourceId}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<String> editResource(Long resourceId, @RequestBody Resource updatedResource){
         return resourceService.editResource(resourceId, updatedResource);
     }
 
     @DeleteMapping("/{resourceId}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<String> deleteResource(Long resourceId){
         return resourceService.deleteResource(resourceId);
     }

@@ -47,7 +47,9 @@ public class ResourceService {
             resourceDTO.setDescription(resource.getDescription());
             resourceDTO.setType(resource.getType());
             resourceDTO.setAvailability(resource.getAvailability());
-            resourceDTO.setEvent(resource.getEventResource().getName());
+            if(resource.getEventResource() != null){
+                resourceDTO.setEvent(resource.getEventResource().getName());
+            }
             resourceDTOList.add(resourceDTO);
         }
         return new ResponseEntity<>(resourceDTOList, HttpStatus.OK);

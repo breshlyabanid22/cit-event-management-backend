@@ -6,8 +6,15 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public class EventDTO {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    //    {
+//        "name": "",
+//        "description": "",
+//        "startTime": "",
+//        "endTime": "",
+//        "venueId": 1,  //venueId
+//        "organizer": 2, //userId
+//        "resourceId": [ 1, 2, 3] //An array of resourceId
+//    }
     private Long id;
 
     private String name;
@@ -19,7 +26,7 @@ public class EventDTO {
     private LocalDateTime endTime;
 
     private String organizer;
-    private List<Long> resourceID;
+    private List<Long> resourceId;
     private List<String> resourceName;
 
     private String venueName;
@@ -48,11 +55,11 @@ public class EventDTO {
         this.organizer = organizer;
     }
     public List<Long> getResourceIDs() {
-        return resourceID;
+        return resourceId;
     }
 
     public void setResourceIDs(List<Long> resources) {
-        this.resourceID = resourceID;
+        this.resourceId = resourceId;
     }
 
     public String getStatus() {

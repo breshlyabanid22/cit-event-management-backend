@@ -26,8 +26,8 @@ public class EventController {
 
     @PostMapping //Create an event and wait for approval
     public ResponseEntity<String> createEvent(
-            @RequestBody EventDTO eventDTO,
-            MultipartFile imageFile,
+            @RequestPart("eventDTO") EventDTO eventDTO,
+            @RequestPart("imageFile") MultipartFile imageFile,
             @AuthenticationPrincipal UserInfoDetails userDetails){
         if (userDetails == null) {
             return new ResponseEntity<>("User not authenticated", HttpStatus.UNAUTHORIZED);
@@ -36,7 +36,7 @@ public class EventController {
         return eventService.createEvent(eventDTO, imageFile, user);
     }
 
-    @GetMapping("/venue/{venueId}") //Fetch an event by Venue. Display this in a venue managers dashboard
+    @GetMapping("/venues/{venueId}") //Fetch an event by Venue. Display this in a venue managers dashboard
     @PreAuthorize("hasAuthority('VENUE_MANAGER') || hasAuthority('ADMIN')") //Only accessible by venue_managers or admin
     public ResponseEntity<List<EventDTO>> getAllEventsByVenue(
             @PathVariable Long venueId,
@@ -71,7 +71,7 @@ public class EventController {
         return eventService.updateEvent(eventId, imageFile, updatedEventDTO, user);
     }
 
-    @PutMapping("/approve/{eventId}")
+    @PutMapping("/{eventId}/approve")
     @PreAuthorize("hasAuthority('VENUE_MANAGER') || hasAuthority('ADMIN')") //An admin or venue_manager can approve the proposed event
     public ResponseEntity<String> approveEventProposal(@PathVariable Long eventId, @AuthenticationPrincipal UserInfoDetails userInfoDetails){
         if(userInfoDetails == null){
@@ -81,7 +81,7 @@ public class EventController {
         return eventService.approveEvent(eventId, user);
     }
 
-    @PutMapping("/reject/{eventId}")
+    @PutMapping("/{eventId}/reject")
     @PreAuthorize("hasAuthority('VENUE_MANAGER') || hasAuthority('ADMIN')")
     public ResponseEntity<String> rejectEventProposal(@PathVariable Long eventId, @AuthenticationPrincipal UserInfoDetails userInfoDetails){
         if(userInfoDetails == null){
@@ -91,7 +91,7 @@ public class EventController {
         return eventService.rejectEvent(eventId, user);
     }
 
-    @DeleteMapping("/cancel/{eventId}") //Cancel or delete an event
+    @DeleteMapping("/{eventId}/cancel") //Cancel or delete an event
     public ResponseEntity<String> cancelEvent(@PathVariable Long eventId, @AuthenticationPrincipal UserInfoDetails userDetails){
         User user = userDetails.getUser();
         return eventService.cancelEvent(eventId, user);

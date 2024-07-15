@@ -31,11 +31,11 @@ public class AdminController {
     }
 
 
-    @PutMapping("/user/{userId}")
+    @PatchMapping("/users/{userId}")
     public ResponseEntity<String> updateUser(Long userId, @RequestBody User updatedUser){
         return userService.updateUser(userId, updatedUser);
     }
-    @DeleteMapping("/user/deactivate/{userId}")
+    @DeleteMapping("/users/{userId}/deactivate")
     public ResponseEntity<String> deactivateMyAccount(@PathVariable Long userId){
         User user = userRepository.findById(userId).orElseThrow(() -> new UsernameNotFoundException("User not found"));
         return userService.deactivateAccount(user);

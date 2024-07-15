@@ -9,12 +9,6 @@ import java.util.List;
 @Entity
 public class Venue {
 
-//    {
-//        "name": "",
-//        "location": "",
-//        "maxCapacity": "",
-//        "venueManagers": [1 , 2 ,3] //An array of userIds
-//    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

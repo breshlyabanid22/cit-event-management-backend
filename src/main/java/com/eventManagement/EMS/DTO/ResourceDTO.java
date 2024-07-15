@@ -3,6 +3,12 @@ package com.eventManagement.EMS.DTO;
 
 public class ResourceDTO {
 
+    //    {
+//        "name" : "",
+//        "description": "",
+//        "type": "",  //equipment, personel, room
+//        "availability": true,
+//    }
     private Long id;
 
     private String name;

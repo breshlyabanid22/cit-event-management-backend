@@ -35,14 +35,13 @@ public class UserController {
     public ResponseEntity<UserDTO> login(@RequestBody UserDTO userDTO, HttpServletRequest request){
         return userService.login(userDTO.getUsername(), userDTO.getPassword(), request);
     }
-
     @PostMapping("/logout")
     public ResponseEntity<String> logout(HttpServletRequest request, HttpServletResponse response) {
         new SecurityContextLogoutHandler().logout(request, response, null);
         return new ResponseEntity<>("Logout successful", HttpStatus.OK);
     }
 
-    @PutMapping("/account")//User updates their user profile or account
+    @PatchMapping("/account")//User updates their user profile or account
     public ResponseEntity<String> updateMyProfile(MultipartFile multipartFile, @AuthenticationPrincipal UserDetails userDetails, @RequestBody User updatedUser) {
         Long userId = getUserIdFromUserDetails(userDetails);
         return userService.updateProfile(multipartFile, userId, updatedUser);

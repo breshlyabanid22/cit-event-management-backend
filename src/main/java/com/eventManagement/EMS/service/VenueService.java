@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class VenueService {
@@ -32,14 +33,16 @@ public class VenueService {
         venue.setMaxCapacity(venueDTO.getMaxCapacity());
 
         List<User> managers = new ArrayList<>();
-        for (Long managerId : venueDTO.getVenueManagersID()) {
-            if (managerId == null) {
-                throw new IllegalArgumentException("Venue manager ID must not be null");
+        if(venueDTO.getVenueManagersID() != null){
+            for (Long managerId : venueDTO.getVenueManagersID()) {
+                if (managerId == null) {
+                    throw new IllegalArgumentException("Venue manager ID must not be null");
+                }
+                User foundManager = userRepository.findById(managerId)
+                        .orElseThrow(() -> new IllegalArgumentException("Invalid venue manager ID: " + managerId));
+                managers.add(foundManager);
+                foundManager.setRole("VENUE_MANAGER");
             }
-            User foundManager = userRepository.findById(managerId)
-                    .orElseThrow(() -> new IllegalArgumentException("Invalid venue manager ID: " + managerId));
-            managers.add(foundManager);
-            foundManager.setRole("VENUE_MANAGER");
         }
         venue.setVenueManagers(managers);
         return venueRepository.save(venue);

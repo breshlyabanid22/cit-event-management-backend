@@ -5,6 +5,14 @@ import java.util.List;
 
 public class VenueDTO {
 
+
+    //    {
+//        "name": "",
+//        "location": "",
+//        "maxCapacity": "",
+//        "venueManagersID": [1 , 2 ,3] //An array of userIds
+//    }
+
     private Long id;
 
     private String name;
@@ -13,7 +21,6 @@ public class VenueDTO {
     private int maxCapacity;
 
     private List<String> events;
-
     private List<Long> venueManagersID;
     private List<String> venueManagers = new ArrayList<>();
 
