@@ -22,9 +22,10 @@ public class EventRegistrationController {
     @Autowired
     EventRegistrationService eventRegistrationService;
 
-
+    // localhost:8080/users?eventId=1&userId=3   (sample usage)
     @PostMapping//Registers a user to an event
-    public ResponseEntity<String> registerToEvent(@RequestParam Long eventId, @RequestParam Long userId){
+    public ResponseEntity<String> registerToEvent(@RequestParam("eventId") Long eventId,
+                                                  @RequestParam("userId") Long userId){
         return eventRegistrationService.registerToEvent(eventId, userId);
     }
 
