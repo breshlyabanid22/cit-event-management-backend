@@ -2,10 +2,7 @@ package com.eventManagement.EMS.service;
 
 import com.eventManagement.EMS.DTO.EventDTO;
 import com.eventManagement.EMS.models.*;
-import com.eventManagement.EMS.repository.EventRegistrationRepository;
-import com.eventManagement.EMS.repository.EventRepository;
-import com.eventManagement.EMS.repository.ResourceRepository;
-import com.eventManagement.EMS.repository.VenueRepository;
+import com.eventManagement.EMS.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -30,6 +27,8 @@ public class EventService {
     @Autowired
     EventRepository eventRepository;
 
+    @Autowired
+    UserRepository userRepository;
     @Autowired
     VenueRepository venueRepository;
 
@@ -272,16 +271,18 @@ public class EventService {
     }
 
     //This is accessed by admin or venue_manager when approving a proposed event
-    public ResponseEntity<String> approveEvent(Long userId, User user){
-        Optional<Event> eventOptional = eventRepository.findById(userId);
-
+    public ResponseEntity<String> approveEvent(Long eventId, User user){
+        Optional<Event> eventOptional = eventRepository.findById(eventId);
         if(eventOptional.isEmpty()){
             return new ResponseEntity<>("Event does not exist", HttpStatus.NOT_FOUND);
         }
         Event event = eventOptional.get();
+
         if(user.getRole().equals("VENUE_MANAGER") || user.getRole().equals("ADMIN")){
             event.setStatus("Approved");
             eventRepository.save(event);
+            String message = "Your proposed event " + event.getName() + " has been approved.";
+            notificationService.createNotification(event.getOrganizer(), message, event);
             return  new ResponseEntity<>("Event has been approved", HttpStatus.OK);
         }else {
             return new ResponseEntity<>("User is not authorized to approve the event", HttpStatus.UNAUTHORIZED);
@@ -298,6 +299,8 @@ public class EventService {
         Event event = eventOptional.get();
         if(user.getRole().equals("VENUE_MANAGER") || user.getRole().equals("ADMIN")){
             event.setStatus("Rejected");
+            String message = "Your proposed event " + event.getName() + " has been rejected.";
+            notificationService.createNotification(event.getOrganizer(), message, event);
             eventRepository.save(event);
             return  new ResponseEntity<>("Event has been approved", HttpStatus.OK);
         }else {

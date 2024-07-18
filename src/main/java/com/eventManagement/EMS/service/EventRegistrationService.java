@@ -57,6 +57,8 @@ public class EventRegistrationService {
         registration.setStatus("Pending");
         registration.setRegisteredAt(LocalDateTime.now().format(DateTimeFormatter.ofPattern("E, MMM dd yyyy")));
 
+        String message = "Pending join request for " + event.getName();
+        notificationService.createNotification(user, message, event);
         eventRegistrationRepository.save(registration);
         return new ResponseEntity<>("Registered Successfully. Please wait for approval.", HttpStatus.OK);
     }
@@ -76,6 +78,9 @@ public class EventRegistrationService {
         if(existingRegistration.isPresent()){
             EventRegistration eventRegistration = existingRegistration.get();
             eventRegistration.setStatus("Canceled");
+
+            String message = "Your join request for " + event.getName() + " has been canceled";
+            notificationService.createNotification(user, message, event);
             return new ResponseEntity<>("Registration has been canceled", HttpStatus.OK);
         }
         return new ResponseEntity<>("Registration not found", HttpStatus.NOT_FOUND);

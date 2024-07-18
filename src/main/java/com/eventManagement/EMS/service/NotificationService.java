@@ -38,6 +38,7 @@ public class NotificationService {
         return notificationRepository.save(notification);
     }
 
+    //Fetch all the notifications of the logged-in user
     public ResponseEntity<List<NotificationDTO>> getNotificationsByUser(User user){
         List<Notification> notifications = notificationRepository.findByRecipient(user);
         List<NotificationDTO> notificationList = new ArrayList<>();
@@ -54,6 +55,7 @@ public class NotificationService {
         return new ResponseEntity<>(notificationList, HttpStatus.OK);
     }
 
+    //Send notifications to all users
     public void sendNotificationToUser(List<User> users, String message, Event event){
         for(User user: users){
             createNotification(user, message, event);
