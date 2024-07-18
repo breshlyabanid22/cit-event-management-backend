@@ -65,7 +65,7 @@ public class EventService {
             try {
                 Path uploadPath = Paths.get(uploadDir).toAbsolutePath().normalize();
                 Files.createDirectories(uploadPath);
-                if(imageFile.getOriginalFilename() == null){
+                if(imageFile.getOriginalFilename() != null){
                     Path filePath = uploadPath.resolve(imageFile.getOriginalFilename());
                     imageFile.transferTo(filePath.toFile());
 
@@ -230,7 +230,7 @@ public class EventService {
                     try {
                         Path uploadPath = Paths.get(uploadDir).toAbsolutePath().normalize();
                         Files.createDirectories(uploadPath);
-                        if(imageFile.getOriginalFilename() == null){
+                        if(imageFile.getOriginalFilename() != null){
                             Path filePath = uploadPath.resolve(imageFile.getOriginalFilename());
                             imageFile.transferTo(filePath.toFile());
 
