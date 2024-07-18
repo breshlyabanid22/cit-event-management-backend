@@ -31,9 +31,9 @@ public class AdminController {
     }
 
 
-    @PatchMapping("/users/{userId}")
-    public ResponseEntity<String> updateUser(Long userId, @RequestBody User updatedUser){
-        return userService.updateUser(userId, updatedUser);
+    @PatchMapping("/users/{userID}")
+    public ResponseEntity<String> updateUser(@PathVariable Long userID, @RequestBody User updatedUser){
+        return userService.updateUser(userID, updatedUser);
     }
     @DeleteMapping("/users/{userId}/deactivate")
     public ResponseEntity<String> deactivateMyAccount(@PathVariable Long userId){

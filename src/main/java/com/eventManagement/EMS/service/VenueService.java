@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,10 +36,6 @@ public class VenueService {
     public String uploadDir;
 
     public ResponseEntity<String> addVenue(VenueDTO venueDTO, MultipartFile imageFile) {
-        Venue venue = new Venue();
-        venue.setName(venueDTO.getName());
-        venue.setLocation(venueDTO.getLocation());
-        venue.setMaxCapacity(venueDTO.getMaxCapacity());
 
         List<User> managers = new ArrayList<>();
         if(venueDTO.getVenueManagersID() != null){
@@ -54,18 +51,23 @@ public class VenueService {
         }
         if(!imageFile.isEmpty()){
             try{
-                Files.createDirectories(Paths.get(uploadDir));
-                String fileName = imageFile.getOriginalFilename();
-                String filePath = Paths.get(uploadDir, fileName).toString();
-                File file = new File(filePath);
+                Path uploadPath = Paths.get(uploadDir).toAbsolutePath().normalize();
+                Files.createDirectories(uploadPath);
+                if(imageFile.getOriginalFilename() == null){
+                    Path filePath = uploadPath.resolve(imageFile.getOriginalFilename());
+                    imageFile.transferTo(filePath.toFile());
 
-                imageFile.transferTo(file);
-                venueDTO.setImagePath(filePath);
-                venue.setImagePath(filePath);
+                    venueDTO.setImagePath(filePath.toString());
+                }
             }catch (IOException e){
                 return new ResponseEntity<>("Failed to upload image", HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }
+        Venue venue = new Venue();
+        venue.setName(venueDTO.getName());
+        venue.setLocation(venueDTO.getLocation());
+        venue.setMaxCapacity(venueDTO.getMaxCapacity());
+        venue.setImagePath(venueDTO.getImagePath());
         venue.setVenueManagers(managers);
         venueRepository.save(venue);
         return new ResponseEntity<>("Venue has been changed successfully", HttpStatus.CREATED);

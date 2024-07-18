@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -41,8 +42,7 @@ public class EventService {
     EventRegistrationRepository eventRegistrationRepository;
 
     @Value("${upload.event.dir}")
-    public String uploadDir;
-
+    private String uploadDir;
 
     public ResponseEntity<String> createEvent(EventDTO eventDTO, MultipartFile imageFile, User user){
         Optional<Venue> eventVenueOpt = venueRepository.findById(eventDTO.getVenueId());
@@ -63,13 +63,14 @@ public class EventService {
         }
         if(!imageFile.isEmpty()){
             try {
-                Files.createDirectories(Paths.get(uploadDir));
-                String fileName = imageFile.getOriginalFilename();
-                String filePath = Paths.get(uploadDir, fileName).toString();
-                File file = new File(filePath);
+                Path uploadPath = Paths.get(uploadDir).toAbsolutePath().normalize();
+                Files.createDirectories(uploadPath);
+                if(imageFile.getOriginalFilename() == null){
+                    Path filePath = uploadPath.resolve(imageFile.getOriginalFilename());
+                    imageFile.transferTo(filePath.toFile());
 
-                imageFile.transferTo(file);
-                eventDTO.setImagePath(filePath);
+                    eventDTO.setImagePath(filePath.toString());
+                }
             }catch (IOException e){
                 return new ResponseEntity<>("Failed to upload image", HttpStatus.INTERNAL_SERVER_ERROR);
             }
@@ -227,12 +228,14 @@ public class EventService {
                 if(!imageFile.isEmpty()){
 
                     try {
-                        Files.createDirectories(Paths.get(uploadDir));
-                        String fileName = imageFile.getOriginalFilename();
-                        String filePath = Paths.get(uploadDir, fileName).toString();
-                        File file = new File(filePath);
-                        imageFile.transferTo(file);
-                        updatedEventDTO.setImagePath(filePath);
+                        Path uploadPath = Paths.get(uploadDir).toAbsolutePath().normalize();
+                        Files.createDirectories(uploadPath);
+                        if(imageFile.getOriginalFilename() == null){
+                            Path filePath = uploadPath.resolve(imageFile.getOriginalFilename());
+                            imageFile.transferTo(filePath.toFile());
+
+                            updatedEventDTO.setImagePath(filePath.toString());
+                        }
                     }catch (IOException e){
                         return new ResponseEntity<>("Failed to upload image", HttpStatus.INTERNAL_SERVER_ERROR);
                     }

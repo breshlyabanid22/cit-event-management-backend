@@ -13,7 +13,6 @@ public class UserDTO {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userID;
 
-
     private String username;
     private String password;
 
