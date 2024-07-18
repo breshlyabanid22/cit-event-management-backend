@@ -29,8 +29,10 @@ public class EventRegistrationController {
         return eventRegistrationService.registerToEvent(eventId, userId);
     }
 
-    @DeleteMapping("/{eventId}/cancel")// When participants want to cancel the registration
-    public ResponseEntity<String> cancelRegistration(@PathVariable Long eventId, @RequestParam Long userId){
+    // localhost:8080/users?eventId=1&userId=3   (sample usage)
+    @DeleteMapping// When participants want to cancel the registration
+    public ResponseEntity<String> cancelRegistration(@RequestParam("eventId") Long eventId,
+                                                     @RequestParam("userId") Long userId){
         return eventRegistrationService.cancelRegistration(eventId, userId);
     }
 
