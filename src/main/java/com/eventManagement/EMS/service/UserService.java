@@ -6,6 +6,7 @@ import com.eventManagement.EMS.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,6 +20,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -39,6 +43,9 @@ public class UserService {
 
     @Autowired
     NotificationService notificationService;
+
+    @Value("${upload.user.dir}")
+    private String uploadDir;
 
     public ResponseEntity<List<User>> getAllUsers(){
         List<User> users = userRepository.findAll();
@@ -128,13 +135,15 @@ public class UserService {
                 existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
             }
             if(!imageFile.isEmpty()){
-                try{
-                    String fileName = imageFile.getOriginalFilename();
-                    String uploadDir = "user-images/";
-                    String filePath = uploadDir + fileName;
-                    File file = new File(filePath);
-                    imageFile.transferTo(file);
-                    existingUser.setImagePath(filePath);
+                try {
+                    Path uploadPath = Paths.get(uploadDir).toAbsolutePath().normalize();
+                    Files.createDirectories(uploadPath);
+                    if(imageFile.getOriginalFilename() != null){
+                        Path filePath = uploadPath.resolve(imageFile.getOriginalFilename());
+                        imageFile.transferTo(filePath.toFile());
+
+                        existingUser.setImagePath(filePath.toString());
+                    }
                 }catch (IOException e){
                     return new ResponseEntity<>("Failed to upload image", HttpStatus.INTERNAL_SERVER_ERROR);
                 }

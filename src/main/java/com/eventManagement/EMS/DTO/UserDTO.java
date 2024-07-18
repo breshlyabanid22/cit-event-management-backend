@@ -35,6 +35,7 @@ public class UserDTO {
 
     private String updatedAt;
 
+    private String imagePath;
     private boolean active;
 
     public Long getUserID() {
@@ -135,6 +136,14 @@ public class UserDTO {
 
     public String getCreatedAt() {
         return createdAt;
+    }
+
+    public String getImagePath() {
+        return imagePath;
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
     }
 
     public void setCreatedAt(String createdAt) {
