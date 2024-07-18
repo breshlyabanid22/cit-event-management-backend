@@ -22,7 +22,9 @@ public class VenueDTO {
 
     private List<String> events;
     private List<Long> venueManagersID;
-    private List<String> venueManagers = new ArrayList<>();
+    private List<String> venueManagers;
+
+    private String imagePath;
 
 
     public Long getId() {
@@ -71,6 +73,14 @@ public class VenueDTO {
 
     public void setVenueManagers(List<String> venueManagers) {
         this.venueManagers = venueManagers;
+    }
+
+    public String getImagePath() {
+        return imagePath;
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
     }
 
     public List<Long> getVenueManagersID() {

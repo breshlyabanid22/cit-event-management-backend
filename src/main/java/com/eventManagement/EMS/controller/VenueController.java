@@ -13,6 +13,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -26,13 +27,10 @@ public class VenueController {
 
     @PostMapping
     @PreAuthorize("hasAuthority('ADMIN')") //Only admin users can add a venue
-    public ResponseEntity<Venue> addVenue(@RequestBody VenueDTO venueDTO) {
-        try {
-            Venue savedVenue = venueService.addVenue(venueDTO);
-            return new ResponseEntity<>(savedVenue, HttpStatus.CREATED);
-            } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<String> addVenue(
+            @RequestPart("venueDTO") VenueDTO venueDTO,
+            @RequestPart("imageFile") MultipartFile imageFile) {
+            return venueService.addVenue(venueDTO, imageFile);
     }
 
     //Gets all venues

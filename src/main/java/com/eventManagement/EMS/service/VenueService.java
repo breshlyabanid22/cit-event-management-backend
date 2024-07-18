@@ -9,10 +9,16 @@ import com.eventManagement.EMS.repository.VenueRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,8 +31,10 @@ public class VenueService {
     @Autowired
     UserRepository userRepository;
 
+    @Value("${upload.venue.dir}")
+    public String uploadDir;
 
-    public Venue addVenue(VenueDTO venueDTO) {
+    public ResponseEntity<String> addVenue(VenueDTO venueDTO, MultipartFile imageFile) {
         Venue venue = new Venue();
         venue.setName(venueDTO.getName());
         venue.setLocation(venueDTO.getLocation());
@@ -44,9 +52,23 @@ public class VenueService {
                 foundManager.setRole("VENUE_MANAGER");
             }
         }
-        venue.setVenueManagers(managers);
-        return venueRepository.save(venue);
+        if(!imageFile.isEmpty()){
+            try{
+                Files.createDirectories(Paths.get(uploadDir));
+                String fileName = imageFile.getOriginalFilename();
+                String filePath = Paths.get(uploadDir, fileName).toString();
+                File file = new File(filePath);
 
+                imageFile.transferTo(file);
+                venueDTO.setImagePath(filePath);
+                venue.setImagePath(filePath);
+            }catch (IOException e){
+                return new ResponseEntity<>("Failed to upload image", HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        }
+        venue.setVenueManagers(managers);
+        venueRepository.save(venue);
+        return new ResponseEntity<>("Venue has been changed successfully", HttpStatus.CREATED);
     }
 
     public ResponseEntity<List<VenueDTO>> getAll(){

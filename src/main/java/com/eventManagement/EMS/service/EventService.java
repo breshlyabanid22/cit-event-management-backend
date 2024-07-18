@@ -40,8 +40,8 @@ public class EventService {
     @Autowired
     EventRegistrationRepository eventRegistrationRepository;
 
-    @Value("${upload.dir}")
-    private String uploadDir;
+    @Value("${upload.event.dir}")
+    public String uploadDir;
 
 
     public ResponseEntity<String> createEvent(EventDTO eventDTO, MultipartFile imageFile, User user){
@@ -71,7 +71,6 @@ public class EventService {
                 imageFile.transferTo(file);
                 eventDTO.setImagePath(filePath);
             }catch (IOException e){
-                e.printStackTrace();
                 return new ResponseEntity<>("Failed to upload image", HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }

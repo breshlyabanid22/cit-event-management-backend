@@ -22,6 +22,7 @@ public class Venue {
     @OneToMany(mappedBy = "venue")
     private List<Event> events;
 
+    private String imagePath;
 
     @ManyToMany
     @JoinTable(
@@ -33,11 +34,12 @@ public class Venue {
 
     public Venue() {}
 
-    public Venue(Long id, String name, String location, int maxCapacity, List<Event> events, List<User> venueManagers) {
+    public Venue(Long id, String name, String location, int maxCapacity,String imagePath, List<Event> events, List<User> venueManagers) {
         this.id = id;
         this.name = name;
         this.location = location;
         this.maxCapacity = maxCapacity;
+        this.imagePath = imagePath;
         this.events = events;
         this.venueManagers = venueManagers;
     }
@@ -80,6 +82,14 @@ public class Venue {
 
     public void setEvents(List<Event> events) {
         this.events = events;
+    }
+
+    public String getImagePath() {
+        return imagePath;
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
     }
 
     public List<User> getVenueManagers() {
