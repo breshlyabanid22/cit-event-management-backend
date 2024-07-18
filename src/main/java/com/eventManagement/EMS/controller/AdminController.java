@@ -36,13 +36,13 @@ public class AdminController {
     }
     @DeleteMapping("/users/{userID}/deactivate")
     public ResponseEntity<String> deactivateMyAccount(@PathVariable Long userID){
-        User user = userRepository.findById(userId).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        User user = userRepository.findById(userID).orElseThrow(() -> new UsernameNotFoundException("User not found"));
         return userService.deactivateAccount(user);
     }
 
     @PatchMapping("/users/{userID}/activate")
     public ResponseEntity<String> activateMyAccount(@PathVariable Long userID){
-        User user = userRepository.findById(userId).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        User user = userRepository.findById(userID).orElseThrow(() -> new UsernameNotFoundException("User not found"));
         return userService.activateAccount(user);
     }
 
