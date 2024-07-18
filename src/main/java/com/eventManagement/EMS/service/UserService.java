@@ -75,7 +75,7 @@ public class UserService {
         UserDTO userDTO = new UserDTO();
         userDTO.setUserID(user.getUserID());
         userDTO.setUsername(user.getUsername());
-        userDTO.setPassword(user.getPassword());
+        userDTO.setPassword(passwordEncoder.encode(user.getPassword()));
         userDTO.setCourse(user.getCourse());
         userDTO.setFirstName(user.getFirstName());
         userDTO.setLastName(user.getLastName());

@@ -3,7 +3,6 @@ package com.eventManagement.EMS.repository;
 
 import com.eventManagement.EMS.models.Event;
 import com.eventManagement.EMS.models.User;
-import com.eventManagement.EMS.models.Venue;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

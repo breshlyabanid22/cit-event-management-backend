@@ -7,6 +7,7 @@ import com.eventManagement.EMS.repository.EventRepository;
 import com.eventManagement.EMS.repository.ResourceRepository;
 import com.eventManagement.EMS.repository.VenueRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -37,6 +40,10 @@ public class EventService {
     @Autowired
     EventRegistrationRepository eventRegistrationRepository;
 
+    @Value("${upload.dir}")
+    private String uploadDir;
+
+
     public ResponseEntity<String> createEvent(EventDTO eventDTO, MultipartFile imageFile, User user){
         Optional<Venue> eventVenueOpt = venueRepository.findById(eventDTO.getVenueId());
         if(eventDTO.getName() == null || eventDTO.getStartTime() == null || eventDTO.getEndTime() == null){
@@ -45,26 +52,30 @@ public class EventService {
         if(eventVenueOpt.isEmpty()){
             return new ResponseEntity<>("Venue not found", HttpStatus.NOT_FOUND);
         }
+
         List<Event> conflictingEvents = eventRepository.findByVenueAndTimeRange(
                 eventDTO.getVenueId(),
                 eventDTO.getStartTime(),
                 eventDTO.getEndTime()
         );
+        if(!conflictingEvents.isEmpty()){
+            return new ResponseEntity<>("The venue is already reserved for the specified date. Please try again.", HttpStatus.CONFLICT);
+        }
         if(!imageFile.isEmpty()){
             try {
+                Files.createDirectories(Paths.get(uploadDir));
                 String fileName = imageFile.getOriginalFilename();
-                String uploadDir = "event-images/";
-                String filePath = uploadDir + fileName;
+                String filePath = Paths.get(uploadDir, fileName).toString();
                 File file = new File(filePath);
+
                 imageFile.transferTo(file);
                 eventDTO.setImagePath(filePath);
             }catch (IOException e){
+                e.printStackTrace();
                 return new ResponseEntity<>("Failed to upload image", HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }
-        if(!conflictingEvents.isEmpty()){
-            return new ResponseEntity<>("The venue is already reserved for the specified date", HttpStatus.CONFLICT);
-        }
+
         Venue eventVenue = eventVenueOpt.get();
         Event event = new Event();
         event.setVenue(eventVenue);
@@ -75,10 +86,15 @@ public class EventService {
         event.setStatus("Pending");
         event.setOrganizer(user);
         event.setImagePath(eventDTO.getImagePath());
-        event.setCreatedAt(LocalDateTime.now().format(DateTimeFormatter.ofPattern("E, MMM dd yyyy")));
+        event.setCreatedAt(LocalDateTime.now().format(DateTimeFormatter.ofPattern("E MMM dd yyyy")));
 
         List<Resource> resourceList = new ArrayList<>();
-        for(Long resourceId : eventDTO.getResourceIDs()){
+        List<Long> resourceIDs = eventDTO.getResourceIDs();
+
+        if(resourceIDs == null || resourceIDs.isEmpty()){
+            throw new IllegalArgumentException("Resource id must not be null");
+        }
+        for(Long resourceId : resourceIDs){
             if (resourceId == null) {
                 throw new IllegalArgumentException("Venue manager ID must not be null");
             }
@@ -88,6 +104,12 @@ public class EventService {
             event.setResources(resourceList);
         }
         eventRepository.save(event);
+        //Send notifications to venue_managers
+        List<User> venueManagers = eventVenue.getVenueManagers().stream().toList();
+        String message = "New event request by " + user.getUsername();
+        for(User manager: venueManagers){
+            notificationService.createNotification(manager, message, event);
+        }
         return new ResponseEntity<>("Event created successfully", HttpStatus.CREATED);
     }
 
@@ -204,10 +226,11 @@ public class EventService {
                         updatedEventDTO.getEndTime()
                 );
                 if(!imageFile.isEmpty()){
+
                     try {
+                        Files.createDirectories(Paths.get(uploadDir));
                         String fileName = imageFile.getOriginalFilename();
-                        String uploadDir = "event-images/";
-                        String filePath = uploadDir + fileName;
+                        String filePath = Paths.get(uploadDir, fileName).toString();
                         File file = new File(filePath);
                         imageFile.transferTo(file);
                         updatedEventDTO.setImagePath(filePath);
@@ -234,6 +257,7 @@ public class EventService {
                 existingEvent.setStartTime(updatedEventDTO.getStartTime() != null ? updatedEventDTO.getStartTime() : existingEvent.getStartTime());
                 existingEvent.setEndTime(updatedEventDTO.getEndTime() != null ? updatedEventDTO.getEndTime() : existingEvent.getEndTime());
                 existingEvent.setStatus(updatedEventDTO.getStatus() != null ? updatedEventDTO.getStatus() : existingEvent.getStatus());
+                existingEvent.setUpdatedAt(LocalDateTime.now().format(DateTimeFormatter.ofPattern("E MMM dd yyyy")));
 
                 eventRepository.save(existingEvent);
                 return new ResponseEntity<>("Event updated successfully", HttpStatus.OK);

@@ -61,6 +61,6 @@ public class ResourceService {
         }
         Resource resource = resourceOptional.get();
         resourceRepository.delete(resource);
-        return new ResponseEntity<>("Resource has been deleted", HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>("Resource has been deleted", HttpStatus.NOT_FOUND);
     }
 }

@@ -2,11 +2,13 @@ package com.eventManagement.EMS.controller;
 
 
 import com.eventManagement.EMS.DTO.ResourceDTO;
+import com.eventManagement.EMS.config.UserInfoDetails;
 import com.eventManagement.EMS.models.Resource;
 import com.eventManagement.EMS.service.ResourceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

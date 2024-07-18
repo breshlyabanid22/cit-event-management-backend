@@ -3,7 +3,6 @@ package com.eventManagement.EMS.models;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -21,7 +20,6 @@ public class Event {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-
     private LocalDateTime startTime;
 
     private LocalDateTime endTime;
@@ -38,7 +36,7 @@ public class Event {
     private List<Feedback> feedback;
 
     @OneToMany(mappedBy = "eventResource", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Resource> resources = new ArrayList<>();
+    private List<Resource> resources;
 
     private String status;
 

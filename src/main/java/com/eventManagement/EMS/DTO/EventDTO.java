@@ -1,6 +1,6 @@
 package com.eventManagement.EMS.DTO;
 
-import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,8 +21,9 @@ public class EventDTO {
 
     private String description;
 
+    @JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime startTime;
-
+    @JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime endTime;
 
     private String organizer;
@@ -35,6 +36,8 @@ public class EventDTO {
     private String status;
 
     private String imagePath;
+
+
     public Long getId() {
         return id;
     }
@@ -58,7 +61,7 @@ public class EventDTO {
         return resourceId;
     }
 
-    public void setResourceIDs(List<Long> resources) {
+    public void setResourceIDs(List<Long> resourceId) {
         this.resourceId = resourceId;
     }
 
@@ -128,5 +131,17 @@ public class EventDTO {
 
     public void setImagePath(String imagePath) {
         this.imagePath = imagePath;
+    }
+
+
+    @Override
+    public String toString() {
+        return "EventDTO{" +
+                "resourceId=" + resourceId +
+                " name=" + name +
+                " venueId=" + venueId +
+                " startTime=" + startTime +
+                " endTime=" + endTime +
+                '}';
     }
 }

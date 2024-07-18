@@ -20,6 +20,7 @@ import java.util.List;
 @RestController
 public class EventController {
 
+
     @Autowired
     EventService eventService;
 
@@ -28,10 +29,13 @@ public class EventController {
     public ResponseEntity<String> createEvent(
             @RequestPart("eventDTO") EventDTO eventDTO,
             @RequestPart("imageFile") MultipartFile imageFile,
+            @RequestParam("resourceId") List<Long> resourceId,
             @AuthenticationPrincipal UserInfoDetails userDetails){
+
         if (userDetails == null) {
             return new ResponseEntity<>("User not authenticated", HttpStatus.UNAUTHORIZED);
         }
+        eventDTO.setResourceIDs(resourceId);
         User user = userDetails.getUser();
         return eventService.createEvent(eventDTO, imageFile, user);
     }
@@ -67,8 +71,14 @@ public class EventController {
 
 
     @PatchMapping("/{eventId}") //Update an event
-    public ResponseEntity<String> updateEvent(@PathVariable Long eventId, MultipartFile imageFile, @RequestBody EventDTO updatedEventDTO, @AuthenticationPrincipal UserInfoDetails userDetails){
+    public ResponseEntity<String> updateEvent(
+            @PathVariable Long eventId,
+            @RequestPart("imageFile") MultipartFile imageFile,
+            @RequestPart("updatedEventDTO") EventDTO updatedEventDTO,
+            @RequestParam("resourceId") List<Long> resourceId,
+            @AuthenticationPrincipal UserInfoDetails userDetails){
         User user = userDetails.getUser();
+        updatedEventDTO.setResourceIDs(resourceId);
         return eventService.updateEvent(eventId, imageFile, updatedEventDTO, user);
     }
 
