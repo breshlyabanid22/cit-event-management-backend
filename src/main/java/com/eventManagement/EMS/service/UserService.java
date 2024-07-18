@@ -182,6 +182,7 @@ public class UserService {
             existingUser.setRole(updatedUser.getRole() != null ? updatedUser.getRole() : existingUser.getRole() );
             existingUser.setSchoolID(updatedUser.getSchoolID() != null ? updatedUser.getSchoolID() : existingUser.getSchoolID());
 
+
             if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
                 existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
             }
@@ -224,6 +225,12 @@ public class UserService {
         user.setActive(false);
         userRepository.save(user);
         return new ResponseEntity<>("Account deactivated successfully", HttpStatus.OK);
+    }
+
+    public ResponseEntity<String> activateAccount(User user){
+        user.setActive(true);
+        userRepository.save(user);
+        return new ResponseEntity<>("Account activated successfully", HttpStatus.OK);
     }
 
 

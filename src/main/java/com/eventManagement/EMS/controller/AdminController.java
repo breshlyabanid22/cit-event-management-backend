@@ -30,15 +30,20 @@ public class AdminController {
         return userService.getAllUsers();
     }
 
-
     @PatchMapping("/users/{userID}")
     public ResponseEntity<String> updateUser(@PathVariable Long userID, @RequestBody User updatedUser){
         return userService.updateUser(userID, updatedUser);
     }
-    @DeleteMapping("/users/{userId}/deactivate")
-    public ResponseEntity<String> deactivateMyAccount(@PathVariable Long userId){
+    @DeleteMapping("/users/{userID}/deactivate")
+    public ResponseEntity<String> deactivateMyAccount(@PathVariable Long userID){
         User user = userRepository.findById(userId).orElseThrow(() -> new UsernameNotFoundException("User not found"));
         return userService.deactivateAccount(user);
+    }
+
+    @PatchMapping("/users/{userID}/activate")
+    public ResponseEntity<String> activateMyAccount(@PathVariable Long userID){
+        User user = userRepository.findById(userId).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        return userService.activateAccount(user);
     }
 
 
