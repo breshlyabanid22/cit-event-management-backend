@@ -1,8 +1,5 @@
 package com.eventManagement.EMS.DTO;
 
-
-import com.eventManagement.EMS.models.Event;
-import com.eventManagement.EMS.models.Venue;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -30,6 +27,8 @@ public class UserDTO {
     private String year;
     private String course;
     private String department;
+
+    private List<Long> managedVenuesID;
 
     private String createdAt;
 
@@ -73,6 +72,7 @@ public class UserDTO {
     public String getSchoolID() {
         return schoolID;
     }
+
 
     public void setSchoolID(String schoolID) {
         this.schoolID = schoolID;
@@ -140,6 +140,14 @@ public class UserDTO {
 
     public String getImagePath() {
         return imagePath;
+    }
+
+    public List<Long> getManagedVenuesID() {
+        return managedVenuesID;
+    }
+
+    public void setManagedVenuesID(List<Long> managedVenuesID) {
+        this.managedVenuesID = managedVenuesID;
     }
 
     public void setImagePath(String imagePath) {

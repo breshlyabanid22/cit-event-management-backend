@@ -2,7 +2,9 @@ package com.eventManagement.EMS.service;
 
 import com.eventManagement.EMS.DTO.UserDTO;
 import com.eventManagement.EMS.models.User;
+import com.eventManagement.EMS.models.Venue;
 import com.eventManagement.EMS.repository.UserRepository;
+import com.eventManagement.EMS.repository.VenueRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +29,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -43,7 +46,8 @@ public class UserService {
 
     @Autowired
     NotificationService notificationService;
-
+    @Autowired
+    VenueRepository venueRepository;
     @Value("${upload.user.dir}")
     private String uploadDir;
 
@@ -158,7 +162,7 @@ public class UserService {
         }
     }
     //Admin can update users' profile
-    public ResponseEntity<String> updateUser(Long userId, User updatedUser) {
+    public ResponseEntity<String> updateUser(Long userId, UserDTO updatedUser) {
         Optional<User> userOptional = userRepository.findById(userId);
 
         if (userOptional.isPresent()) {
@@ -181,8 +185,17 @@ public class UserService {
             existingUser.setDepartment(updatedUser.getDepartment() != null ? updatedUser.getDepartment() : existingUser.getDepartment());
             existingUser.setRole(updatedUser.getRole() != null ? updatedUser.getRole() : existingUser.getRole() );
             existingUser.setSchoolID(updatedUser.getSchoolID() != null ? updatedUser.getSchoolID() : existingUser.getSchoolID());
-
-
+            List<Long> managedVenuesIDs = updatedUser.getManagedVenuesID();
+            if(managedVenuesIDs != null){
+                List<Venue> managedVenues = managedVenuesIDs.stream()
+                        .map(id -> venueRepository.findById(id)
+                                .orElseThrow(() -> new IllegalArgumentException("Invalid venue ID")))
+                        .toList();
+                existingUser.setManagedVenues(managedVenues);
+                existingUser.setRole("VENUE_MANAGER");
+            }else{
+                existingUser.setManagedVenues(existingUser.getManagedVenues());
+            }
             if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
                 existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
             }

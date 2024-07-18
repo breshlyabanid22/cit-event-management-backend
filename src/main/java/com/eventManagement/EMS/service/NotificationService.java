@@ -6,6 +6,7 @@ import com.eventManagement.EMS.models.Event;
 import com.eventManagement.EMS.models.Notification;
 import com.eventManagement.EMS.models.User;
 import com.eventManagement.EMS.repository.NotificationRepository;
+import com.eventManagement.EMS.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,13 +16,15 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class NotificationService {
 
     @Autowired
     NotificationRepository notificationRepository;
-
+    @Autowired
+    UserRepository userRepository;
     public Notification createNotification(User recipient, String message, Event event){
         Notification notification = new Notification();
         notification.setMessage(message);
@@ -39,7 +42,12 @@ public class NotificationService {
     }
 
     //Fetch all the notifications of the logged-in user
-    public ResponseEntity<List<NotificationDTO>> getNotificationsByUser(User user){
+    public ResponseEntity<List<NotificationDTO>> getNotificationsByUser(Long userID){
+        Optional<User> userOptional = userRepository.findById(userID);
+        if(userOptional.isEmpty()){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        User user = userOptional.get();
         List<Notification> notifications = notificationRepository.findByRecipient(user);
         List<NotificationDTO> notificationList = new ArrayList<>();
 

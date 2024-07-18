@@ -1,6 +1,7 @@
 package com.eventManagement.EMS.controller;
 
 
+import com.eventManagement.EMS.DTO.UserDTO;
 import com.eventManagement.EMS.config.UserInfoDetails;
 import com.eventManagement.EMS.models.User;
 import com.eventManagement.EMS.repository.UserRepository;
@@ -31,7 +32,7 @@ public class AdminController {
     }
 
     @PatchMapping("/users/{userID}")
-    public ResponseEntity<String> updateUser(@PathVariable Long userID, @RequestBody User updatedUser){
+    public ResponseEntity<String> updateUser(@PathVariable Long userID, @RequestBody UserDTO updatedUser){
         return userService.updateUser(userID, updatedUser);
     }
     @DeleteMapping("/users/{userID}/deactivate")
