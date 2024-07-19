@@ -2,7 +2,6 @@ package com.eventManagement.EMS.controller;
 
 import com.eventManagement.EMS.DTO.EventRegistrationDTO;
 import com.eventManagement.EMS.config.UserInfoDetails;
-import com.eventManagement.EMS.models.EventRegistration;
 import com.eventManagement.EMS.models.User;
 import com.eventManagement.EMS.service.EventRegistrationService;
 import org.springframework.beans.factory.annotation.Autowired;

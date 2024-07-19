@@ -22,6 +22,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,18 +38,6 @@ public class VenueService {
 
     public ResponseEntity<String> addVenue(VenueDTO venueDTO, MultipartFile imageFile) {
 
-        List<User> managers = new ArrayList<>();
-        if(venueDTO.getVenueManagersID() != null){
-            for (Long managerId : venueDTO.getVenueManagersID()) {
-                if (managerId == null) {
-                    throw new IllegalArgumentException("Venue manager ID must not be null");
-                }
-                User foundManager = userRepository.findById(managerId)
-                        .orElseThrow(() -> new IllegalArgumentException("Invalid venue manager ID: " + managerId));
-                managers.add(foundManager);
-                foundManager.setRole("VENUE_MANAGER");
-            }
-        }
         if(!imageFile.isEmpty()){
             try{
                 Path uploadPath = Paths.get(uploadDir).toAbsolutePath().normalize();
@@ -63,6 +52,14 @@ public class VenueService {
                 return new ResponseEntity<>("Failed to upload image", HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }
+        Optional<User> userOptional = userRepository.findById(venueDTO.getVenueManagersID());
+        if(userOptional.isEmpty()){
+            return new ResponseEntity<>("Invalid user id", HttpStatus.NOT_FOUND);
+        }
+        User foundManager = userOptional.get();
+        List<User> managers = new ArrayList<>();
+        foundManager.setRole("VENUE_MANAGER");
+        managers.add(foundManager);
         Venue venue = new Venue();
         venue.setName(venueDTO.getName());
         venue.setLocation(venueDTO.getLocation());
@@ -106,5 +103,10 @@ public class VenueService {
 
         venueRepository.delete(venue);
         return new ResponseEntity<>("Venue successfully deleted", HttpStatus.NO_CONTENT);
+    }
+    @Transactional
+    public ResponseEntity<String> deleteAll(){
+        venueRepository.deleteAll();
+        return new ResponseEntity<>("All venues has been deleted", HttpStatus.NO_CONTENT);
     }
 }

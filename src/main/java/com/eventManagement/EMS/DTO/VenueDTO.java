@@ -21,7 +21,7 @@ public class VenueDTO {
     private int maxCapacity;
 
     private List<String> events;
-    private List<Long> venueManagersID;
+    private Long venueManagersID;
     private List<String> venueManagers;
 
     private String imagePath;
@@ -83,11 +83,11 @@ public class VenueDTO {
         this.imagePath = imagePath;
     }
 
-    public List<Long> getVenueManagersID() {
+    public Long getVenueManagersID() {
         return venueManagersID;
     }
 
-    public void setVenueManagersID(List<Long> venueManagersID) {
+    public void setVenueManagersID(Long venueManagersID) {
         this.venueManagersID = venueManagersID;
     }
 }

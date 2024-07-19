@@ -45,6 +45,11 @@ public class VenueController {
         return venueService.deleteVenue(venueId);
     }
 
+    @DeleteMapping
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<String> deleteAllVenues(){
+        return venueService.deleteAll();
+    }
 
 
 

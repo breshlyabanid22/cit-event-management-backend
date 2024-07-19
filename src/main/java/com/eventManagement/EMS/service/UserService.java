@@ -27,6 +27,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -51,12 +52,33 @@ public class UserService {
     @Value("${upload.user.dir}")
     private String uploadDir;
 
-    public ResponseEntity<List<User>> getAllUsers(){
+    public ResponseEntity<List<UserDTO>> getAllUsers(){
         List<User> users = userRepository.findAll();
+        List<UserDTO> userDTOList = new ArrayList<>();
         if(users.isEmpty()){
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }else{
-            return new ResponseEntity<>(users, HttpStatus.OK);
+            for(User user: users){
+                UserDTO userDTO = new UserDTO();
+                userDTO.setUserID(user.getUserID());
+                userDTO.setUsername(user.getUsername());
+                userDTO.setPassword(user.getPassword());
+                userDTO.setEmail(user.getEmail());
+                userDTO.setRole(user.getRole());
+                userDTO.setActive(user.isActive());
+                userDTO.setUserType(user.getUserType());
+                userDTO.setSchoolID(user.getSchoolID());
+                userDTO.setYear(user.getYear());
+                userDTO.setCourse(user.getCourse());
+                userDTO.setDepartment(user.getDepartment());
+                userDTO.setImagePath(user.getImagePath());
+                userDTO.setFirstName(user.getFirstName());
+                userDTO.setLastName(user.getLastName());
+                userDTO.setCreatedAt(user.getCreatedAt());
+                userDTO.setUpdatedAt(user.getUpdatedAt());
+                userDTOList.add(userDTO);
+            }
+            return new ResponseEntity<>(userDTOList, HttpStatus.OK);
         }
     }
 
