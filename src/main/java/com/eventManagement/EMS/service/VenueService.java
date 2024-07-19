@@ -15,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -23,7 +22,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class VenueService {
@@ -32,6 +30,9 @@ public class VenueService {
     VenueRepository venueRepository;
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    NotificationService notificationService;
 
     @Value("${upload.venue.dir}")
     public String uploadDir;
@@ -60,12 +61,18 @@ public class VenueService {
         List<User> managers = new ArrayList<>();
         foundManager.setRole("VENUE_MANAGER");
         managers.add(foundManager);
+
         Venue venue = new Venue();
         venue.setName(venueDTO.getName());
         venue.setLocation(venueDTO.getLocation());
         venue.setMaxCapacity(venueDTO.getMaxCapacity());
         venue.setImagePath(venueDTO.getImagePath());
         venue.setVenueManagers(managers);
+
+        //Then send notification to the user
+        String message = "Hi " + foundManager.getFirstName() + ", you have been appointed as a venue manager at " + venueDTO.getName();
+        notificationService.regularNotification(foundManager, message);
+
         venueRepository.save(venue);
         return new ResponseEntity<>("Venue has been changed successfully", HttpStatus.CREATED);
     }
