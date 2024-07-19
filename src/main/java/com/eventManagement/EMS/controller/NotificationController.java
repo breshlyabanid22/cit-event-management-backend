@@ -30,5 +30,4 @@ public class NotificationController {
         return notificationService.deleteNotification(notificationID);
     }
 
-
 }
