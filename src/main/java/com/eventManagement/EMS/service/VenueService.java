@@ -96,7 +96,7 @@ public class VenueService {
             for(User manager : venue.getVenueManagers()){
                 User foundManager = userRepository.findById(manager.getUserID())
                         .orElseThrow(() -> new IllegalArgumentException("Invalid venue manager ID: " + manager.getUserID()));
-                foundManager.setRole("USER");
+                foundManager.setRole("PARTICIPANT");
             }
             venue.getVenueManagers().clear();
         }
@@ -104,8 +104,13 @@ public class VenueService {
         venueRepository.delete(venue);
         return new ResponseEntity<>("Venue successfully deleted", HttpStatus.NO_CONTENT);
     }
-    @Transactional
+    @Transactional//Deletes all venues. It won't be deleted if it has active event held in the event
     public ResponseEntity<String> deleteAll(){
+        List<User> venueManagers = userRepository.findByRole("VENUE_MANAGER");
+
+        for(User user: venueManagers){
+            user.setRole("PARTICIPANT");
+        }
         venueRepository.deleteAll();
         return new ResponseEntity<>("All venues has been deleted", HttpStatus.NO_CONTENT);
     }
