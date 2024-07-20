@@ -33,7 +33,6 @@ public class User {
     @Column(name = "user_type")
     private String userType;
 
-    @Column(columnDefinition = "VARCHAR(255) DEFAULT 'USER'")
     private String role;
 
     private String year;

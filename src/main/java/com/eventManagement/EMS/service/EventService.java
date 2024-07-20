@@ -20,6 +20,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class EventService {
@@ -57,7 +58,10 @@ public class EventService {
                 eventDTO.getStartTime(),
                 eventDTO.getEndTime()
         );
-        if(!conflictingEvents.isEmpty()){
+        List<Event> activeConflictingEvents = conflictingEvents.stream()
+                .filter(event -> !"Canceled".equalsIgnoreCase(event.getStatus()))
+                .toList();
+        if(!activeConflictingEvents.isEmpty()){
             return new ResponseEntity<>("The venue is already reserved for the specified date. Please try again.", HttpStatus.CONFLICT);
         }
         if(!imageFile.isEmpty()){
@@ -113,8 +117,8 @@ public class EventService {
     }
 
     public ResponseEntity<List<EventDTO>> getAllEventsByVenue(Long venueId, User user) {
-        // Check if user is a venue manager or admin
-        if (user.getRole().equals("VENUE_MANAGER") || user.getRole().equals("ADMIN")) {
+        // Check if user is an organizer or admin
+        if (user.getRole().equals("ORGANIZER") || user.getRole().equals("ADMIN")) {
             // Check if user is assigned to the venue or is an admin
             if (user.getRole().equals("ADMIN") || user.getManagedVenues().stream().anyMatch(v -> v.getId().equals(venueId))) {
                 List<Event> events = eventRepository.findByVenueId(venueId);
@@ -175,7 +179,7 @@ public class EventService {
                     eventDTO.setStartTime(event.getStartTime());
                     eventDTO.setEndTime(event.getEndTime());
                     eventDTO.setVenueName(event.getVenue().getName());
-                    eventDTO.setOrganizer(event.getOrganizer().getUsername());
+                    eventDTO.setOrganizer(event.getOrganizer().getFirstName() + event.getOrganizer().getLastName());
                     eventDTO.setImagePath(event.getImagePath());
                     eventDTO.setStatus(event.getStatus());
                     eventDTO.setResourceName(event.getResources().stream().map(Resource::getName).toList());
@@ -224,6 +228,14 @@ public class EventService {
                         updatedEventDTO.getStartTime(),
                         updatedEventDTO.getEndTime()
                 );
+                conflictingEvents.removeIf(event -> event.getId().equals(eventId));
+                List<Event> activeConflictingEvents = conflictingEvents.stream()
+                                .filter(event -> !"Canceled".equalsIgnoreCase(event.getStatus()))
+                                        .toList();
+
+                if(!activeConflictingEvents.isEmpty()){
+                    return new ResponseEntity<>("The venue is already reserved for the specified date", HttpStatus.CONFLICT);
+                }
                 if(!imageFile.isEmpty()){
 
                     try {
@@ -240,11 +252,6 @@ public class EventService {
                     }
                 }
                 // Exclude the event being updated from conflict checks
-                conflictingEvents.removeIf(event -> event.getId().equals(eventId));
-
-                if(!conflictingEvents.isEmpty()){
-                    return new ResponseEntity<>("The venue is already reserved for the specified date", HttpStatus.CONFLICT);
-                }
 
                 if(venueEventOpt.isPresent()){
                     Venue eventVenue = venueEventOpt.get();
@@ -278,7 +285,7 @@ public class EventService {
         }
         Event event = eventOptional.get();
 
-        if(user.getRole().equals("VENUE_MANAGER") || user.getRole().equals("ADMIN")){
+        if((user.getRole().equals("ORGANIZER") && user.getUserType().equals("VENUE_MANAGER")) || user.getRole().equals("ADMIN")){
             event.setStatus("Approved");
             eventRepository.save(event);
             String message = "Your proposed event " + event.getName() + " has been approved.";
@@ -297,7 +304,7 @@ public class EventService {
             return new ResponseEntity<>("Event does not exist", HttpStatus.NOT_FOUND);
         }
         Event event = eventOptional.get();
-        if(user.getRole().equals("VENUE_MANAGER") || user.getRole().equals("ADMIN")){
+        if((user.getRole().equals("ORGANIZER") && user.getUserType().equals("VENUE_MANAGER")) || user.getRole().equals("ADMIN")){
             event.setStatus("Rejected");
             String message = "Your proposed event " + event.getName() + " has been rejected.";
             notificationService.createNotification(event.getOrganizer(), message, event);

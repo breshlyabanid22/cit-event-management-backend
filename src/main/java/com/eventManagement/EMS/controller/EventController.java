@@ -41,7 +41,7 @@ public class EventController {
     }
 
     @GetMapping("/venues/{venueId}") //Fetch an event by Venue. Display this in a venue managers dashboard
-    @PreAuthorize("hasAuthority('VENUE_MANAGER') || hasAuthority('ADMIN')") //Only accessible by venue_managers or admin
+    @PreAuthorize("hasAuthority('ORGANIZER') || hasAuthority('ADMIN')") //Only accessible by venue_managers or admin
     public ResponseEntity<List<EventDTO>> getAllEventsByVenue(
             @PathVariable Long venueId,
             @AuthenticationPrincipal UserInfoDetails userDetails){
@@ -83,7 +83,7 @@ public class EventController {
     }
 
     @PatchMapping("/{eventId}/approve")
-    @PreAuthorize("hasAuthority('VENUE_MANAGER') || hasAuthority('ADMIN')") //An admin or venue_manager can approve the proposed event
+    @PreAuthorize("hasAuthority('ORGANIZER') || hasAuthority('ADMIN')") //An admin or venue_manager can approve the proposed event
     public ResponseEntity<String> approveEventProposal(@PathVariable Long eventId, @AuthenticationPrincipal UserInfoDetails userInfoDetails){
         if(userInfoDetails == null){
             return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
@@ -93,7 +93,7 @@ public class EventController {
     }
 
     @PatchMapping("/{eventId}/reject")
-    @PreAuthorize("hasAuthority('VENUE_MANAGER') || hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ORGANIZER') || hasAuthority('ADMIN')")
     public ResponseEntity<String> rejectEventProposal(@PathVariable Long eventId, @AuthenticationPrincipal UserInfoDetails userInfoDetails){
         if(userInfoDetails == null){
             return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);

@@ -211,10 +211,8 @@ public class UserService {
             existingUser.setCourse(updatedUser.getCourse() != null ? updatedUser.getCourse() : existingUser.getCourse());
             existingUser.setDepartment(updatedUser.getDepartment() != null ? updatedUser.getDepartment() : existingUser.getDepartment());
             existingUser.setRole(updatedUser.getRole() != null ? updatedUser.getRole() : existingUser.getRole() );
-
             existingUser.setSchoolID(updatedUser.getSchoolID() != null ? updatedUser.getSchoolID() : existingUser.getSchoolID());
-
-
+            existingUser.setUserType(updatedUser.getUserType() != null ? updatedUser.getUserType() : existingUser.getUserType());
 
             List<Long> managedVenuesIDs = updatedUser.getManagedVenuesID();
             if(managedVenuesIDs != null){
@@ -223,7 +221,7 @@ public class UserService {
                                 .orElseThrow(() -> new IllegalArgumentException("Invalid venue ID")))
                         .toList();
                 existingUser.setManagedVenues(managedVenues);
-                existingUser.setRole("VENUE_MANAGER");
+                existingUser.setUserType("VENUE_MANAGER");
             }else{
                 existingUser.setManagedVenues(existingUser.getManagedVenues());
             }

@@ -39,7 +39,7 @@ public class VenueService {
 
     public ResponseEntity<String> addVenue(VenueDTO venueDTO, List<MultipartFile> imageFiles) {
 
-        if(!imageFiles.isEmpty() && imageFiles != null){
+        if(!imageFiles.isEmpty()){
             List<String> imagePaths = new ArrayList<>();
             for(MultipartFile imageFile : imageFiles){
                 if(!imageFile.isEmpty()){
@@ -64,7 +64,8 @@ public class VenueService {
         }
         User foundManager = userOptional.get();
         List<User> managers = new ArrayList<>();
-        foundManager.setRole("VENUE_MANAGER");
+        foundManager.setUserType("VENUE_MANAGER");
+        foundManager.setRole("ORGANIZER");
         managers.add(foundManager);
 
         Venue venue = new Venue();
@@ -105,11 +106,10 @@ public class VenueService {
                 .orElseThrow(() -> new EntityNotFoundException("Venue not found with id " + venueId));
 
         if(venue.getVenueManagers() != null){
-            List<User> managers = new ArrayList<>();
             for(User manager : venue.getVenueManagers()){
                 User foundManager = userRepository.findById(manager.getUserID())
                         .orElseThrow(() -> new IllegalArgumentException("Invalid venue manager ID: " + manager.getUserID()));
-                foundManager.setRole("PARTICIPANT");
+                foundManager.setUserType(null);
             }
             venue.getVenueManagers().clear();
         }
@@ -122,7 +122,7 @@ public class VenueService {
         List<User> venueManagers = userRepository.findByRole("VENUE_MANAGER");
 
         for(User user: venueManagers){
-            user.setRole("PARTICIPANT");
+            user.setUserType(null);
         }
         venueRepository.deleteAll();
         return new ResponseEntity<>("All venues has been deleted", HttpStatus.NO_CONTENT);

@@ -27,5 +27,6 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     List<Event> findByVenueId(Long venue);
     Optional<Event> findByOrganizer(User user);
+    List<Event> findByStatus(String status);
 
 }
