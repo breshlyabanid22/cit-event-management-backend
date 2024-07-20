@@ -204,7 +204,7 @@ public class UserService {
                 }
             }
             if(updatedUser.getSchoolID() != null && !updatedUser.getSchoolID().equals(existingUser.getSchoolID())){
-                if(userRepository.existBySchoolID(updatedUser.getSchoolID())){
+                if(userRepository.existsBySchoolID(updatedUser.getSchoolID())){
                     return new ResponseEntity<>("School ID already exist", HttpStatus.CONFLICT);
                 }
             }
@@ -218,7 +218,6 @@ public class UserService {
             existingUser.setDepartment(updatedUser.getDepartment() != null ? updatedUser.getDepartment() : existingUser.getDepartment());
             existingUser.setRole(updatedUser.getRole() != null ? updatedUser.getRole() : existingUser.getRole() );
             existingUser.setSchoolID(updatedUser.getSchoolID() != null ? updatedUser.getSchoolID() : existingUser.getSchoolID());
-            existingUser.setUserType(updatedUser.getUserType() != null ? updatedUser.getUserType() : existingUser.getUserType());
 
             List<Long> managedVenuesIDs = updatedUser.getManagedVenuesID();
             if(managedVenuesIDs != null){
