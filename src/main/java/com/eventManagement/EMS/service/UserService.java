@@ -198,6 +198,11 @@ public class UserService {
                     existingUser.setUsername(existingUser.getUsername());
                 }
             }
+            if(userRepository.findBySchoolID(updatedUser.getSchoolID()).isPresent()){
+                return new ResponseEntity<>("School id already exist", HttpStatus.CONFLICT);
+            }else if(userRepository.findByEmail(updatedUser.getEmail()).isPresent()){
+                return new ResponseEntity<>("Email already exist", HttpStatus.BAD_REQUEST);
+            }
             existingUser.setEmail(updatedUser.getEmail() != null ? updatedUser.getEmail() : existingUser.getEmail());
             existingUser.setFirstName(updatedUser.getFirstName() != null ? updatedUser.getFirstName() : existingUser.getFirstName());
             existingUser.setLastName(updatedUser.getLastName() != null ? updatedUser.getLastName() : existingUser.getLastName());
@@ -206,7 +211,11 @@ public class UserService {
             existingUser.setCourse(updatedUser.getCourse() != null ? updatedUser.getCourse() : existingUser.getCourse());
             existingUser.setDepartment(updatedUser.getDepartment() != null ? updatedUser.getDepartment() : existingUser.getDepartment());
             existingUser.setRole(updatedUser.getRole() != null ? updatedUser.getRole() : existingUser.getRole() );
+
             existingUser.setSchoolID(updatedUser.getSchoolID() != null ? updatedUser.getSchoolID() : existingUser.getSchoolID());
+
+
+
             List<Long> managedVenuesIDs = updatedUser.getManagedVenuesID();
             if(managedVenuesIDs != null){
                 List<Venue> managedVenues = managedVenuesIDs.stream()

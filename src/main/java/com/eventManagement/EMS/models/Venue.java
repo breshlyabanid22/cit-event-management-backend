@@ -21,8 +21,10 @@ public class Venue {
 
     @OneToMany(mappedBy = "venue")
     private List<Event> events;
-
-    private String imagePath;
+    @ElementCollection
+    @CollectionTable(name = "venue_images", joinColumns = @JoinColumn(name = "venue_id"))
+    @Column(name = "image_path")
+    private List<String> imagePaths = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(
@@ -34,12 +36,12 @@ public class Venue {
 
     public Venue() {}
 
-    public Venue(Long id, String name, String location, int maxCapacity,String imagePath, List<Event> events, List<User> venueManagers) {
+    public Venue(Long id, String name, String location, int maxCapacity,List<String> imagePaths, List<Event> events, List<User> venueManagers) {
         this.id = id;
         this.name = name;
         this.location = location;
         this.maxCapacity = maxCapacity;
-        this.imagePath = imagePath;
+        this.imagePaths = imagePaths;
         this.events = events;
         this.venueManagers = venueManagers;
     }
@@ -84,12 +86,12 @@ public class Venue {
         this.events = events;
     }
 
-    public String getImagePath() {
-        return imagePath;
+    public List<String> getImagePath() {
+        return imagePaths;
     }
 
-    public void setImagePath(String imagePath) {
-        this.imagePath = imagePath;
+    public void setImagePath(List<String> imagePath) {
+        this.imagePaths = imagePath;
     }
 
     public List<User> getVenueManagers() {

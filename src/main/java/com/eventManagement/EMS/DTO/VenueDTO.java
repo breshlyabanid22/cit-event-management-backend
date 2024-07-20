@@ -1,5 +1,7 @@
 package com.eventManagement.EMS.DTO;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +26,7 @@ public class VenueDTO {
     private Long venueManagersID;
     private List<String> venueManagers;
 
-    private String imagePath;
+    private List <String> imagePaths;
 
 
     public Long getId() {
@@ -75,17 +77,18 @@ public class VenueDTO {
         this.venueManagers = venueManagers;
     }
 
-    public String getImagePath() {
-        return imagePath;
+    public List<String> getImagePath() {
+        return imagePaths;
     }
 
-    public void setImagePath(String imagePath) {
-        this.imagePath = imagePath;
+    public void setImagePath(List<String> imagePaths) {
+        this.imagePaths = imagePaths;
     }
 
     public Long getVenueManagersID() {
         return venueManagersID;
     }
+
 
     public void setVenueManagersID(Long venueManagersID) {
         this.venueManagersID = venueManagersID;

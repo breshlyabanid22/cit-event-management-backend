@@ -37,21 +37,26 @@ public class VenueService {
     @Value("${upload.venue.dir}")
     public String uploadDir;
 
-    public ResponseEntity<String> addVenue(VenueDTO venueDTO, MultipartFile imageFile) {
+    public ResponseEntity<String> addVenue(VenueDTO venueDTO, List<MultipartFile> imageFiles) {
 
-        if(!imageFile.isEmpty()){
-            try{
-                Path uploadPath = Paths.get(uploadDir).toAbsolutePath().normalize();
-                Files.createDirectories(uploadPath);
-                if(imageFile.getOriginalFilename() != null){
-                    Path filePath = uploadPath.resolve(imageFile.getOriginalFilename());
-                    imageFile.transferTo(filePath.toFile());
-
-                    venueDTO.setImagePath(filePath.toString());
+        if(!imageFiles.isEmpty() && imageFiles != null){
+            List<String> imagePaths = new ArrayList<>();
+            for(MultipartFile imageFile : imageFiles){
+                if(!imageFile.isEmpty()){
+                    try{
+                        Path uploadPath = Paths.get(uploadDir).toAbsolutePath().normalize();
+                        Files.createDirectories(uploadPath);
+                        if(imageFile.getOriginalFilename() != null){
+                            Path filePath = uploadPath.resolve(imageFile.getOriginalFilename());
+                            imageFile.transferTo(filePath.toFile());
+                            imagePaths.add(filePath.toString());
+                        }
+                    }catch (IOException e){
+                        return new ResponseEntity<>("Failed to upload image", HttpStatus.INTERNAL_SERVER_ERROR);
+                    }
                 }
-            }catch (IOException e){
-                return new ResponseEntity<>("Failed to upload image", HttpStatus.INTERNAL_SERVER_ERROR);
             }
+            venueDTO.setImagePath(imagePaths);
         }
         Optional<User> userOptional = userRepository.findById(venueDTO.getVenueManagersID());
         if(userOptional.isEmpty()){
@@ -89,6 +94,7 @@ public class VenueService {
             venueDTO.setVenueManagers(venue.getVenueManagers().stream().map(User::getFirstName).toList());
             venueDTO.setEvents(venue.getEvents().stream().map(Event::getName).toList());
             venueDTO.setName(venue.getName());
+            venueDTO.setImagePath(venue.getImagePath());
             venueDTOList.add(venueDTO);
         }
         return new ResponseEntity<>(venueDTOList, HttpStatus.OK);

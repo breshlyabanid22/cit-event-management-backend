@@ -29,8 +29,8 @@ public class VenueController {
     @PreAuthorize("hasAuthority('ADMIN')") //Only admin users can add a venue
     public ResponseEntity<String> addVenue(
             @RequestPart("venueDTO") VenueDTO venueDTO,
-            @RequestPart("imageFile") MultipartFile imageFile) {
-            return venueService.addVenue(venueDTO, imageFile);
+            @RequestPart("imageFiles") List<MultipartFile> imageFiles) {
+            return venueService.addVenue(venueDTO, imageFiles);
     }
 
     //Gets all venues
