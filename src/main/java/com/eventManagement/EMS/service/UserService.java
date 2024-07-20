@@ -198,12 +198,18 @@ public class UserService {
                     existingUser.setUsername(existingUser.getUsername());
                 }
             }
-            if(userRepository.findBySchoolID(updatedUser.getSchoolID()).isPresent()){
-                return new ResponseEntity<>("School id already exist", HttpStatus.CONFLICT);
-            }else if(userRepository.findByEmail(updatedUser.getEmail()).isPresent()){
-                return new ResponseEntity<>("Email already exist", HttpStatus.BAD_REQUEST);
+            if (updatedUser.getEmail() != null && !updatedUser.getEmail().equals(existingUser.getEmail())) {
+                if (userRepository.existsByEmail(updatedUser.getEmail())) {
+                    return new ResponseEntity<>("Email already in use", HttpStatus.CONFLICT);
+                }
+            }
+            if(updatedUser.getSchoolID() != null && !updatedUser.getSchoolID().equals(existingUser.getSchoolID())){
+                if(userRepository.existBySchoolID(updatedUser.getSchoolID())){
+                    return new ResponseEntity<>("School ID already exist", HttpStatus.CONFLICT);
+                }
             }
             existingUser.setEmail(updatedUser.getEmail() != null ? updatedUser.getEmail() : existingUser.getEmail());
+            existingUser.setSchoolID(updatedUser.getSchoolID() != null  ? updatedUser.getSchoolID() : existingUser.getSchoolID());
             existingUser.setFirstName(updatedUser.getFirstName() != null ? updatedUser.getFirstName() : existingUser.getFirstName());
             existingUser.setLastName(updatedUser.getLastName() != null ? updatedUser.getLastName() : existingUser.getLastName());
             existingUser.setUserType(updatedUser.getUserType() != null ? updatedUser.getUserType() : existingUser.getUserType());
