@@ -82,6 +82,57 @@ public class VenueService {
         venueRepository.save(venue);
         return new ResponseEntity<>("Venue has been changed successfully", HttpStatus.CREATED);
     }
+    public ResponseEntity<String> updateVenue(Long venueId, VenueDTO updateVenue, List<MultipartFile> imageFiles){
+        Optional<Venue> venueOptional = venueRepository.findById(venueId);
+
+        Venue existingVenue = venueOptional.get();
+
+        if(!imageFiles.isEmpty()){
+            List<String> imagePaths = new ArrayList<>();
+            for(MultipartFile imageFile : imageFiles){
+                if(!imageFile.isEmpty()){
+                    try{
+                        Path uploadPath = Paths.get(uploadDir).toAbsolutePath().normalize();
+                        Files.createDirectories(uploadPath);
+                        if(imageFile.getOriginalFilename() != null){
+                            Path filePath = uploadPath.resolve(imageFile.getOriginalFilename());
+                            imageFile.transferTo(filePath.toFile());
+                            imagePaths.add(filePath.toString());
+                        }
+                    }catch (IOException e){
+                        return new ResponseEntity<>("Failed to upload image", HttpStatus.INTERNAL_SERVER_ERROR);
+                    }
+                }
+            }
+            existingVenue.setImagePath(imagePaths);
+        }
+        if(venueOptional.isEmpty()){
+            return new ResponseEntity<>("Venue not found", HttpStatus.NOT_FOUND);
+        }
+
+        if(updateVenue.getVenueManagersID() != null){
+            Optional<User> userOptional = userRepository.findById(updateVenue.getVenueManagersID());
+            if(userOptional.isEmpty()){
+                return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+            }
+            User venueManager = userOptional.get();
+            List<User> venueManagers = new ArrayList<>();
+            venueManager.setUserType("VENUE_MANAGER");
+            venueManager.setRole("ORGANIZER");
+            venueManagers.add(venueManager);
+            existingVenue.setVenueManagers(venueManagers);
+        }
+        existingVenue.setImagePath(existingVenue.getImagePath());
+        existingVenue.setName(updateVenue.getName() != null ? updateVenue.getName() : existingVenue.getName());
+        existingVenue.setLocation(updateVenue.getLocation() != null ? updateVenue.getLocation() : existingVenue.getLocation());
+        if(updateVenue.getMaxCapacity() >= 0){
+            existingVenue.setMaxCapacity(updateVenue.getMaxCapacity());
+        }
+        existingVenue.setName(updateVenue.getName() != null ? updateVenue.getName() : existingVenue.getName());
+
+        venueRepository.save(existingVenue);
+        return new ResponseEntity<>("Venue has been updated", HttpStatus.OK);
+    }
 
     public ResponseEntity<List<VenueDTO>> getAll(){
         List<Venue> venues = venueRepository.findAll();
