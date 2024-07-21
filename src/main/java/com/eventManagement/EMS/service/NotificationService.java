@@ -56,7 +56,9 @@ public class NotificationService {
             notificationDTO.setId(notification.getId());
             notificationDTO.setRecipient(notification.getRecipient().getUsername());
             notificationDTO.setMessage(notification.getMessage());
-            notificationDTO.setEvent(notification.getEvent().getName());
+            if(notification.getEvent() != null){
+                notificationDTO.setEvent(notification.getEvent().getName());
+            }
             notificationDTO.setCreatedAt(notification.getCreatedAt());
             notificationList.add(notificationDTO);
         }
