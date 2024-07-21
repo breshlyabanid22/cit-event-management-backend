@@ -76,7 +76,7 @@ public class VenueService {
         venue.setVenueManagers(managers);
 
         //Then send notification to the user
-        String message = "Hi " + foundManager.getFirstName() + ", you have been appointed as a venue manager at " + venueDTO.getName();
+        String message = "Hi " + foundManager.getFirstName() + ", you have been appointed as the venue manager for " + venueDTO.getName();
         notificationService.regularNotification(foundManager, message);
 
         venueRepository.save(venue);

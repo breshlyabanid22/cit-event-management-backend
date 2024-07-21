@@ -73,6 +73,6 @@ public class NotificationService {
     }
     public ResponseEntity<String> deleteNotification(Long notificationID){
         notificationRepository.deleteById(notificationID);
-        return new ResponseEntity<>("Notif is deleted", HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>("Notification is deleted", HttpStatus.NO_CONTENT);
     }
 }
