@@ -78,6 +78,7 @@ public class EventRegistrationService {
         if(existingRegistration.isPresent()){
             EventRegistration eventRegistration = existingRegistration.get();
             eventRegistration.setStatus("Canceled");
+            eventRegistrationRepository.delete(eventRegistration);
 
             String message = "Your join request for " + event.getName() + " has been canceled";
             notificationService.createNotification(user, message, event);
