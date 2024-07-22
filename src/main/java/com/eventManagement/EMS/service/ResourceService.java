@@ -42,6 +42,7 @@ public class ResourceService {
         existingResource.setDescription(updatedResource.getDescription() != null ? updatedResource.getDescription() : existingResource.getDescription());
         existingResource.setName(updatedResource.getName() != null ? updatedResource.getName() : existingResource.getName());
         existingResource.setType(updatedResource.getType() != null ? updatedResource.getType() : existingResource.getType());
+        resourceRepository.save(existingResource);
         return new ResponseEntity<>("Resource has been updated", HttpStatus.OK);
     }
     public ResponseEntity<List<ResourceDTO>> getAllResource(){
