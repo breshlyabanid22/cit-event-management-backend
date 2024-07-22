@@ -287,7 +287,9 @@ public class EventService {
 
         if((user.getRole().equals("ORGANIZER") && user.getUserType().equals("VENUE_MANAGER")) || user.getRole().equals("ADMIN")){
             event.setStatus("Approved");
-            event.getOrganizer().setRole("ORGANIZER");
+            if(user.getRole().equals("PARTICIPANT")){
+                event.getOrganizer().setRole("ORGANIZER");
+            }
             eventRepository.save(event);
             String message = "Your proposed event " + event.getName() + " has been approved.";
             notificationService.createNotification(event.getOrganizer(), message, event);
@@ -327,7 +329,9 @@ public class EventService {
                 List<EventRegistration> registrations = eventRegistrationRepository.findByEventId(eventId);
                 List<User> registeredUsers = registrations.stream().map(EventRegistration::getUser).toList();
                 String message = "Sorry, the event " + event.getName() + " has been canceled";
+                if(user.getRole().equals("ORGANIZER")){
                 event.getOrganizer().setRole("PARTICIPANT");
+                }
                 notificationService.sendNotificationToUser(registeredUsers, message, event);
                 event.setStatus("Canceled");
                 return new ResponseEntity<>("Event has been cancelled", HttpStatus.OK);
