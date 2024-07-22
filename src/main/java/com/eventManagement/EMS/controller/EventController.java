@@ -49,11 +49,16 @@ public class EventController {
         return eventService.getAllEventsByVenue(venueId, user);
     }
 
-
     @GetMapping // Get all events
     @PreAuthorize("hasAuthority('ADMIN')")//Fetches all events regardless of status
     public ResponseEntity<List<EventDTO>> getAllEvents(){
         return eventService.getAllEvents();
+    }
+
+    @GetMapping("/{userId}")
+    @PreAuthorize("hasAuthority('ORGANIZER')")//Fetches all events of a specific organizer
+    public ResponseEntity<List<EventDTO>> getEventsByOrganizer(@PathVariable Long userId){
+        return eventService.getEventsByOrganizer(userId);
     }
 
 

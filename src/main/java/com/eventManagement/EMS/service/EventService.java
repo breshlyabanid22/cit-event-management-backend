@@ -164,6 +164,31 @@ public class EventService {
         }
         return new ResponseEntity<>(eventDTOList, HttpStatus.OK);
     }
+    public ResponseEntity<List<EventDTO>> getEventsByOrganizer(Long userId){
+        Optional<User> userOptional = userRepository.findById(userId);
+        if(userOptional.isEmpty()){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        User organizer = userOptional.get();
+        List<Event> events = eventRepository.findByOrganizer(organizer);
+        List<EventDTO> eventDTOList = new ArrayList<>();
+        for(Event event : events){
+            EventDTO eventDTO = new EventDTO();
+            eventDTO.setId(event.getId());
+            eventDTO.setName(event.getName());
+            eventDTO.setDescription(event.getDescription());
+            eventDTO.setStartTime(event.getStartTime());
+            eventDTO.setEndTime(event.getEndTime());
+            eventDTO.setVenueName(event.getVenue().getName());
+            eventDTO.setOrganizer(event.getOrganizer().getUsername());
+            eventDTO.setImagePath(event.getImagePath());
+            eventDTO.setStatus(event.getStatus());
+            eventDTO.setResourceName(event.getResources().stream().map(Resource::getName).toList());
+            eventDTO.setVenueId(event.getVenue().getId());
+            eventDTOList.add(eventDTO);
+        }
+        return new ResponseEntity<>(eventDTOList, HttpStatus.OK);
+    }
 
     public ResponseEntity<List<EventDTO>> getAllApprovedEvents() {
         List<Event> events = eventRepository.findAll();
