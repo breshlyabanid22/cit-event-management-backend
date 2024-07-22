@@ -35,13 +35,13 @@ public class ResourceController {
 
     @PatchMapping("/{resourceId}")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<String> editResource(Long resourceId, @RequestBody Resource updatedResource){
+    public ResponseEntity<String> editResource(@PathVariable Long resourceId, @RequestBody Resource updatedResource){
         return resourceService.editResource(resourceId, updatedResource);
     }
 
     @DeleteMapping("/{resourceId}")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<String> deleteResource(Long resourceId){
+    public ResponseEntity<String> deleteResource(@PathVariable Long resourceId){
         return resourceService.deleteResource(resourceId);
     }
 
