@@ -23,7 +23,7 @@ public class ResourceController {
 
     @PostMapping //Add a resource
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<String> addResource(@RequestBody Resource resource){
+    public ResponseEntity<String> addResource(@RequestBody ResourceDTO resource){
         return resourceService.addResource(resource);
     }
 

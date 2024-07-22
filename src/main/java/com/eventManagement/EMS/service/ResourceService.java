@@ -3,6 +3,7 @@ package com.eventManagement.EMS.service;
 
 import com.eventManagement.EMS.DTO.ResourceDTO;
 import com.eventManagement.EMS.models.Resource;
+import com.eventManagement.EMS.repository.EventRepository;
 import com.eventManagement.EMS.repository.ResourceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,9 +19,15 @@ public class ResourceService {
 
     @Autowired
     ResourceRepository resourceRepository;
+    @Autowired
+    EventRepository eventRepository;
 
-
-    public ResponseEntity<String> addResource(Resource resource){
+    public ResponseEntity<String> addResource(ResourceDTO resourceDTO){
+        Resource resource = new Resource();
+        resource.setName(resourceDTO.getName());
+        resource.setType(resourceDTO.getType());
+        resource.setDescription(resourceDTO.getDescription());
+        resource.setAvailability(resourceDTO.isAvailability());
         resourceRepository.save(resource);
         return new ResponseEntity<>("Resource has been saved", HttpStatus.CREATED);
     }
