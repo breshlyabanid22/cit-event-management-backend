@@ -37,6 +37,7 @@ public class SecurityConfig{
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/users/**", "/users").permitAll()
                 .requestMatchers("/admin/**").hasAuthority("ADMIN")
+                .requestMatchers("/venue-images/**", "/event-images/**").permitAll()
                 .anyRequest().authenticated())
             .logout(logout -> logout
                     .logoutUrl("/users/logout")

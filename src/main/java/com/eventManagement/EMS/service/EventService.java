@@ -72,7 +72,7 @@ public class EventService {
                     Path filePath = uploadPath.resolve(imageFile.getOriginalFilename());
                     imageFile.transferTo(filePath.toFile());
 
-                    eventDTO.setImagePath(filePath.toString());
+                    eventDTO.setImagePath("/event-images/" + imageFile.getOriginalFilename());
                 }
             }catch (IOException e){
                 return new ResponseEntity<>("Failed to upload image", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -245,7 +245,7 @@ public class EventService {
                             Path filePath = uploadPath.resolve(imageFile.getOriginalFilename());
                             imageFile.transferTo(filePath.toFile());
 
-                            updatedEventDTO.setImagePath(filePath.toString());
+                            updatedEventDTO.setImagePath("/event-images/" + imageFile.getOriginalFilename());
                         }
                     }catch (IOException e){
                         return new ResponseEntity<>("Failed to upload image", HttpStatus.INTERNAL_SERVER_ERROR);

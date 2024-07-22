@@ -49,7 +49,7 @@ public class VenueService {
                         if(imageFile.getOriginalFilename() != null){
                             Path filePath = uploadPath.resolve(imageFile.getOriginalFilename());
                             imageFile.transferTo(filePath.toFile());
-                            imagePaths.add(filePath.toString());
+                            imagePaths.add("/venue-images/" + imageFile.getOriginalFilename());
                         }
                     }catch (IOException e){
                         return new ResponseEntity<>("Failed to upload image", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -97,7 +97,7 @@ public class VenueService {
                         if(imageFile.getOriginalFilename() != null){
                             Path filePath = uploadPath.resolve(imageFile.getOriginalFilename());
                             imageFile.transferTo(filePath.toFile());
-                            imagePaths.add(filePath.toString());
+                            imagePaths.add("/venue-images/" + imageFile.getOriginalFilename());
                         }
                     }catch (IOException e){
                         return new ResponseEntity<>("Failed to upload image", HttpStatus.INTERNAL_SERVER_ERROR);
