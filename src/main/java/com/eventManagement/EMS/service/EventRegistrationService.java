@@ -63,6 +63,35 @@ public class EventRegistrationService {
         return new ResponseEntity<>("Registered Successfully. Please wait for approval.", HttpStatus.OK);
     }
 
+    public ResponseEntity<EventRegistrationDTO> getEventRegistrationByEventAndUser(Long eventId, Long userId) {
+    Optional<Event> optionalEvent = eventRepository.findById(eventId);
+    Optional<User> optionalUser = userRepository.findById(userId);
+
+    if (optionalEvent.isPresent() && optionalUser.isPresent()) {
+        Event event = optionalEvent.get();
+        User user = optionalUser.get();
+
+        Optional<EventRegistration> optionalEventRegistration = eventRegistrationRepository.findByEventAndUser(event, user);
+        if (optionalEventRegistration.isPresent()) {
+            EventRegistration eventRegistration = optionalEventRegistration.get();
+            EventRegistrationDTO dto = new EventRegistrationDTO();
+            dto.setId(eventRegistration.getId());
+            dto.setUserId(eventRegistration.getUser().getUserID());
+            dto.setUsername(eventRegistration.getUser().getUsername());
+            dto.setFullName(eventRegistration.getUser().getFirstName() + " " + eventRegistration.getUser().getLastName());
+            dto.setEventId(eventRegistration.getEvent().getId());
+            dto.setEventName(eventRegistration.getEvent().getName());
+            dto.setStatus(eventRegistration.getStatus());
+            dto.setRegisteredAt(eventRegistration.getRegisteredAt());
+            return new ResponseEntity<>(dto, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    } else {
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+}
+
     public ResponseEntity<String> cancelRegistration(Long eventId, Long userId){
         Optional<Event> eventOpt = eventRepository.findById(eventId);
         Optional<User> userOpt = userRepository.findById(userId);
