@@ -35,6 +35,11 @@ public class EventRegistrationController {
         return eventRegistrationService.cancelRegistration(eventId, userId);
     }
 
+    @GetMapping("/{eventId}/{userId}") // Retrieves a specific event registration by event ID and user ID
+    public ResponseEntity<EventRegistrationDTO> getEventRegistrationByEventAndUser(@PathVariable Long eventId, @PathVariable Long userId) {
+        return eventRegistrationService.getEventRegistrationByEventAndUser(eventId, userId);
+    }
+
     @GetMapping//Retrieves all
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<List<EventRegistrationDTO>> getAllEventRegistrations(){
