@@ -40,7 +40,7 @@ public class EventController {
         return eventService.createEvent(eventDTO, imageFile, user);
     }
 
-    @GetMapping("/venues/{venueId}") //Fetch an event by Venue. Display this in a venue managers dashboard
+    @GetMapping("/venue/{venueId}") //Fetch an event by Venue. Display this in a venue managers dashboard
     @PreAuthorize("hasAuthority('ORGANIZER') || hasAuthority('ADMIN')") //Only accessible by venue_managers or admin
     public ResponseEntity<List<EventDTO>> getAllEventsByVenue(
             @PathVariable Long venueId,
