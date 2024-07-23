@@ -44,6 +44,10 @@ public class VenueController {
         return venueService.updateVenue(venueId, updatedVenue, imageFiles);
     }
 
+    @GetMapping("/{userId}")
+    public ResponseEntity<List<VenueDTO>> getAllVenuesByManager(@PathVariable Long userId){
+        return venueService.getAllVenuesByManager(userId);
+    }
 
     @DeleteMapping("/{venueId}")
     @PreAuthorize("hasAuthority('ADMIN')")

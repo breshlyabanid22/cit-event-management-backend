@@ -21,17 +21,17 @@ public class EventRegistrationController {
     @Autowired
     EventRegistrationService eventRegistrationService;
 
-    // localhost:8080/users?eventId=1&userId=3   (sample usage)
-    @PostMapping//Registers a user to an event
-    public ResponseEntity<String> registerToEvent(@RequestParam("eventId") Long eventId,
-                                                  @RequestParam("userId") Long userId){
+    // localhost:8080/users?eventId=&userId=3   (sample usage)
+    @PostMapping("/{eventId}/{userId}")//Registers a user to an event
+    public ResponseEntity<String> registerToEvent(@PathVariable Long eventId,
+                                                  @PathVariable Long userId){
         return eventRegistrationService.registerToEvent(eventId, userId);
     }
 
     // localhost:8080/users?eventId=1&userId=3   (sample usage)
-    @DeleteMapping// When participants want to cancel the registration
-    public ResponseEntity<String> cancelRegistration(@RequestParam("eventId") Long eventId,
-                                                     @RequestParam("userId") Long userId){
+    @DeleteMapping("/{eventId}/{userId}")// When participants want to cancel the registration
+    public ResponseEntity<String> cancelRegistration(@PathVariable Long eventId,
+                                                     @PathVariable Long userId){
         return eventRegistrationService.cancelRegistration(eventId, userId);
     }
 

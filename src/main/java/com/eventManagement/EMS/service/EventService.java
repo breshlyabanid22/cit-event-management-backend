@@ -169,8 +169,7 @@ public class EventService {
         if(userOptional.isEmpty()){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        User organizer = userOptional.get();
-        List<Event> events = eventRepository.findByOrganizer(organizer);
+        List<Event> events = eventRepository.findByOrganizerUserID(userId);
         List<EventDTO> eventDTOList = new ArrayList<>();
         for(Event event : events){
             EventDTO eventDTO = new EventDTO();

@@ -55,7 +55,7 @@ public class EventController {
         return eventService.getAllEvents();
     }
 
-    @GetMapping("/{userId}")
+    @GetMapping("/{userId}/event")
     @PreAuthorize("hasAuthority('ORGANIZER')")//Fetches all events of a specific organizer
     public ResponseEntity<List<EventDTO>> getEventsByOrganizer(@PathVariable Long userId){
         return eventService.getEventsByOrganizer(userId);

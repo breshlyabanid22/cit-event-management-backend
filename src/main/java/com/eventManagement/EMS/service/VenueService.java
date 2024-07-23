@@ -178,4 +178,26 @@ public class VenueService {
         venueRepository.deleteAll();
         return new ResponseEntity<>("All venues has been deleted", HttpStatus.NO_CONTENT);
     }
+    public ResponseEntity<List<VenueDTO>> getAllVenuesByManager(Long userId){
+        Optional<User> userOptional = userRepository.findById(userId);
+        List<Venue> venues = venueRepository.findAll();
+        if(userOptional.isEmpty()){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        User manager = userOptional.get();
+        List<VenueDTO> managerVenues = new ArrayList<>();
+        for(Venue venue: venues){
+            if(venue.getVenueManagers().stream().anyMatch(mgr -> mgr.getUserID().equals(manager.getUserID()))){
+                VenueDTO venueDTO =  new VenueDTO();
+                venueDTO.setName(venue.getName());
+                venueDTO.setLocation(venue.getLocation());
+                venueDTO.setId(venue.getId());
+                venueDTO.setMaxCapacity(venue.getMaxCapacity());
+                venueDTO.setImagePath(venue.getImagePath());
+                venueDTO.setEvents(venue.getEvents().stream().map(Event::getName).toList());
+                managerVenues.add(venueDTO);
+            }
+        }
+        return new ResponseEntity<>(managerVenues, HttpStatus.OK);
+    }
 }
