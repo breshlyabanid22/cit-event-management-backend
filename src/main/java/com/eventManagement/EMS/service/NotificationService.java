@@ -30,14 +30,14 @@ public class NotificationService {
         notification.setMessage(message);
         notification.setEvent(event);
         notification.setRecipient(recipient);
-        notification.setCreatedAt(LocalDateTime.now().format(DateTimeFormatter.ofPattern("E MMM dd yyyy")));
+        notification.setCreatedAt(LocalDateTime.now().format(DateTimeFormatter.ofPattern("E MMM dd yyyy hh:mm a")));
         return notificationRepository.save(notification);
     }
     public Notification regularNotification(User recipient, String message){
         Notification notification = new Notification();
         notification.setRecipient(recipient);
         notification.setMessage(message);
-        notification.setCreatedAt(LocalDateTime.now().format(DateTimeFormatter.ofPattern("E MMM dd yyyy")));
+        notification.setCreatedAt(LocalDateTime.now().format(DateTimeFormatter.ofPattern("E MMM dd yyyy hh:mm a")));
         return notificationRepository.save(notification);
     }
 
