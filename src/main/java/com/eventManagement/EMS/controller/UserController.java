@@ -53,6 +53,11 @@ public class UserController {
         String updatedUsername = request.get("updatedUsername");
         return userService.updateUsername(userId, updatedUsername);
     }
+    @PatchMapping("/{userId}/password")
+    public ResponseEntity<String> updatePassword(@PathVariable Long userId, @RequestBody Map<String, String> request){
+        String updatedPassword = request.get("updatedPassword");
+        return userService.updatePassword(userId, updatedPassword);
+    }
 
     private Long getUserIdFromUserDetails(UserDetails userDetails) {
         if (userDetails instanceof UserInfoDetails) {

@@ -160,7 +160,7 @@ public class UserService {
             if (updatedUser.getPassword() != null && !updatedUser.getPassword().equals(" ")) {
                 existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
             }
-            if(!imageFile.isEmpty()){
+            if(imageFile != null && !imageFile.isEmpty()){
                 try {
                     Path uploadPath = Paths.get(uploadDir).toAbsolutePath().normalize();
                     Files.createDirectories(uploadPath);
@@ -199,6 +199,18 @@ public class UserService {
         String message = "Your username has been updated!";
         notificationService.regularNotification(existingUser, message);
         return new ResponseEntity<>("Username has been saved", HttpStatus.OK);
+    }
+    public ResponseEntity<String> updatePassword(Long userId, String updatedPassword){
+        Optional<User> findUser = userRepository.findById(userId);
+        if(findUser.isEmpty()){
+            return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+        }
+        User existingUser = findUser.get();
+        existingUser.setPassword(passwordEncoder.encode(updatedPassword));
+        userRepository.save(existingUser);
+        String message = "Your password has been updated!";
+        notificationService.regularNotification(existingUser, message);
+        return new ResponseEntity<>("Password has been saved", HttpStatus.OK);
     }
 
     //Admin can update users' profile
