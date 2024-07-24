@@ -180,17 +180,18 @@ public class UserService {
         if(findUser.isEmpty()){
             return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
         }
+        User existingUser = findUser.get();
+
         //Checks if username is already taken
         Optional<User> existingUserWithSameUsername = userRepository.findByUsername(updatedUsername);
-        if(existingUserWithSameUsername.isPresent()){
+        if(existingUserWithSameUsername.isPresent() && !existingUser.getUsername().equals(updatedUsername)){
             return new ResponseEntity<>("Username already taken.", HttpStatus.CONFLICT);
         }
-        User existingUser = findUser.get();
         existingUser.setUsername(updatedUsername);
         userRepository.save(existingUser);
         String message = "Your username has been updated!";
         notificationService.regularNotification(existingUser, message);
-        return new ResponseEntity<>("Username has been saved", HttpStatus.OK);
+        return new ResponseEntity<>("Username has been updated", HttpStatus.OK);
     }
     public ResponseEntity<String> updatePassword(Long userId, String updatedPassword){
         Optional<User> findUser = userRepository.findById(userId);
@@ -202,7 +203,26 @@ public class UserService {
         userRepository.save(existingUser);
         String message = "Your password has been updated!";
         notificationService.regularNotification(existingUser, message);
-        return new ResponseEntity<>("Password has been saved", HttpStatus.OK);
+        return new ResponseEntity<>("Password has been updated", HttpStatus.OK);
+    }
+
+    public ResponseEntity<String> updateEmail(Long userId, String updatedEmail){
+        Optional<User> findUser = userRepository.findById(userId);
+        if(findUser.isEmpty()){
+            return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+        }
+        User existingUser = findUser.get();
+
+        //Checks if username is already taken
+        Optional<User> existingUserWithSameEmail = userRepository.findByEmail(updatedEmail);
+        if(existingUserWithSameEmail.isPresent() && !existingUser.getEmail().equals(updatedEmail)){
+            return new ResponseEntity<>("Email already taken.", HttpStatus.CONFLICT);
+        }
+        existingUser.setEmail(updatedEmail);
+        userRepository.save(existingUser);
+        String message = "Your email has been updated!";
+        notificationService.regularNotification(existingUser, message);
+        return new ResponseEntity<>("Email has been updated", HttpStatus.OK);
     }
 
     //Admin can update users' profile
