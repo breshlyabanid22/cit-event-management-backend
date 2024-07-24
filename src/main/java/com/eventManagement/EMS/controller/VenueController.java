@@ -40,7 +40,7 @@ public class VenueController {
     public ResponseEntity<String> updateVenue(
             @PathVariable Long venueId,
             @RequestPart("venueDTO") VenueDTO updatedVenue,
-            @RequestPart("imageFiles") List<MultipartFile> imageFiles){
+            @RequestPart(value = "imageFiles", required = false) List<MultipartFile> imageFiles){
         return venueService.updateVenue(venueId, updatedVenue, imageFiles);
     }
 

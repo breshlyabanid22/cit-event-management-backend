@@ -87,7 +87,7 @@ public class VenueService {
 
         Venue existingVenue = venueOptional.get();
 
-        if(!imageFiles.isEmpty()){
+        if(imageFiles != null && !imageFiles.isEmpty()){
             List<String> imagePaths = new ArrayList<>();
             for(MultipartFile imageFile : imageFiles){
                 if(!imageFile.isEmpty()){

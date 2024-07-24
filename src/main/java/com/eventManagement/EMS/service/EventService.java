@@ -260,8 +260,7 @@ public class EventService {
                 if(!activeConflictingEvents.isEmpty()){
                     return new ResponseEntity<>("The venue is already reserved for the specified date", HttpStatus.CONFLICT);
                 }
-                if(!imageFile.isEmpty()){
-
+                if(imageFile != null && !imageFile.isEmpty()){
                     try {
                         Path uploadPath = Paths.get(uploadDir).toAbsolutePath().normalize();
                         Files.createDirectories(uploadPath);
@@ -358,6 +357,7 @@ public class EventService {
                 }
                 notificationService.sendNotificationToUser(registeredUsers, message, event);
                 event.setStatus("Canceled");
+                eventRepository.save(event);
                 return new ResponseEntity<>("Event has been cancelled", HttpStatus.OK);
             }else{
                 return new ResponseEntity<>("You are not authorized to cancel this event", HttpStatus.FORBIDDEN);

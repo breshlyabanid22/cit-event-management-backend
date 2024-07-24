@@ -78,9 +78,9 @@ public class EventController {
     @PatchMapping("/{eventId}") //Update an event
     public ResponseEntity<String> updateEvent(
             @PathVariable Long eventId,
-            @RequestPart("imageFile") MultipartFile imageFile,
+            @RequestPart(value = "imageFile", required = false) MultipartFile imageFile,
             @RequestPart("updatedEventDTO") EventDTO updatedEventDTO,
-            @RequestParam("resourceId") List<Long> resourceId,
+            @RequestParam(value = "resourceId", required = false) List<Long> resourceId,
             @AuthenticationPrincipal UserInfoDetails userDetails){
         User user = userDetails.getUser();
         updatedEventDTO.setResourceIDs(resourceId);

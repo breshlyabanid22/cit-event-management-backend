@@ -145,21 +145,13 @@ public class UserService {
         if (userOptional.isPresent()) {
             User existingUser = userOptional.get();
 
-            if(updatedUser.getUsername() != null && !updatedUser.getUsername().equals(" ")){
-                //Checks if the updated username is equal to the existing data in the database
-                if(updatedUser.getUsername().equals(existingUser.getUsername())){
-                    existingUser.setUsername(updatedUser.getUsername());
-                }else{
-                    existingUser.setUsername(existingUser.getUsername());
-                }
+            if(updatedUser.getDepartment() != null && !updatedUser.getDepartment().equals("College")){
+                existingUser.setCourse("N/A");
+                existingUser.setDepartment(updatedUser.getDepartment());
+            }else{
+                existingUser.setCourse(updatedUser.getCourse());
             }
-            existingUser.setEmail(updatedUser.getEmail() != null ? updatedUser.getEmail() : existingUser.getEmail());
             existingUser.setYear(updatedUser.getYear() != null ? updatedUser.getYear() : existingUser.getYear());
-            existingUser.setCourse(updatedUser.getCourse() != null ? updatedUser.getCourse() : existingUser.getCourse());
-            existingUser.setDepartment(updatedUser.getDepartment() != null ? updatedUser.getDepartment() : existingUser.getDepartment());
-            if (updatedUser.getPassword() != null && !updatedUser.getPassword().equals(" ")) {
-                existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
-            }
             if(imageFile != null && !imageFile.isEmpty()){
                 try {
                     Path uploadPath = Paths.get(uploadDir).toAbsolutePath().normalize();
