@@ -208,12 +208,12 @@ public class UserService {
         if (userOptional.isPresent()) {
             User existingUser = userOptional.get();
 
-            if(updatedUser.getUsername() != null && !updatedUser.getUsername().equals(" ")){
+            if(updatedUser.getUsername() != null && !updatedUser.getUsername().isEmpty()){
                 //Checks if the updated username is equal to the existing data in the database
                 if(updatedUser.getUsername().equals(existingUser.getUsername())){
-                    existingUser.setUsername(updatedUser.getUsername());
-                }else{
                     existingUser.setUsername(existingUser.getUsername());
+                }else{
+                    existingUser.setUsername(updatedUser.getUsername());
                 }
             }
             if (updatedUser.getEmail() != null && !updatedUser.getEmail().equals(existingUser.getEmail())) {
