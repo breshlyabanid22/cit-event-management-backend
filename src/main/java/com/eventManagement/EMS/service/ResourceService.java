@@ -38,7 +38,7 @@ public class ResourceService {
             return new ResponseEntity<>("Resource not found", HttpStatus.NOT_FOUND);
         }
         Resource existingResource = resourceOptional.get();
-        existingResource.setAvailability(updatedResource.getAvailability());
+        existingResource.setAvailability(updatedResource.getAvailability() ? updatedResource.getAvailability() : existingResource.getAvailability());
         existingResource.setDescription(updatedResource.getDescription() != null ? updatedResource.getDescription() : existingResource.getDescription());
         existingResource.setName(updatedResource.getName() != null ? updatedResource.getName() : existingResource.getName());
         existingResource.setType(updatedResource.getType() != null ? updatedResource.getType() : existingResource.getType());

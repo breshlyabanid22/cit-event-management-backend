@@ -42,12 +42,9 @@ public class UserController {
     }
 
     @PatchMapping("/account")//User updates their user profile or account
-    public ResponseEntity<String> updateMyProfile(
-            @RequestPart(value = "imageFile", required = false) MultipartFile imageFile,
-            @AuthenticationPrincipal UserDetails userDetails,
-            @RequestBody User updatedUser) {
+    public ResponseEntity<String> updateMyProfile(MultipartFile multipartFile, @AuthenticationPrincipal UserDetails userDetails, @RequestBody User updatedUser) {
         Long userId = getUserIdFromUserDetails(userDetails);
-        return userService.updateProfile(imageFile, userId, updatedUser);
+        return userService.updateProfile(multipartFile, userId, updatedUser);
     }
 
     private Long getUserIdFromUserDetails(UserDetails userDetails) {

@@ -7,6 +7,7 @@ import com.eventManagement.EMS.models.User;
 import com.eventManagement.EMS.repository.EventRegistrationRepository;
 import com.eventManagement.EMS.repository.EventRepository;
 import com.eventManagement.EMS.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -170,14 +171,18 @@ public class EventRegistrationService {
         }
     }
     //This is accessible by organizers of a specific events
+    @Transactional
     public ResponseEntity<String> acceptRegistrationRequest(Long registrationId, User user){
         Optional<EventRegistration> registrationOptional = eventRegistrationRepository.findById(registrationId);
 
         if(registrationOptional.isEmpty()){ return new ResponseEntity<>("Registration not found", HttpStatus.NOT_FOUND);}
         EventRegistration registration = registrationOptional.get();
         Long eventId = registration.getEvent().getId();
+
+        User organizer = userRepository.findById(user.getUserID()).orElseThrow(() -> new RuntimeException("No user found"));
+        organizer.getOrganizedEvents().size();
         //Checks if the user is the organizer of the event
-        if(user.getOrganizedEvents().stream().anyMatch(e -> e.getId().equals(eventId))){
+        if(organizer.getOrganizedEvents().stream().anyMatch(e -> e.getId().equals(eventId))){
             registration.setStatus("Accepted");
 
             String message = "Hi " + registration.getUser().getFirstName() + ", your join request to " + registration.getEvent().getName() + " has been approved.";
@@ -188,6 +193,7 @@ public class EventRegistrationService {
         return new ResponseEntity<>("User is not an organizer to this event", HttpStatus.NOT_FOUND);
     }
 
+    @Transactional
     public ResponseEntity<String> declineRegistrationRequest(Long registrationId, User user){
         Optional<EventRegistration> registrationOptional = eventRegistrationRepository.findById(registrationId);
 
@@ -195,7 +201,10 @@ public class EventRegistrationService {
 
         EventRegistration registration = registrationOptional.get();
         Long eventId = registration.getEvent().getId();
-        if(user.getOrganizedEvents().stream().anyMatch(e -> e.getId().equals(eventId))){
+
+        User organizer = userRepository.findById(user.getUserID()).orElseThrow(() -> new RuntimeException("user not found"));
+        organizer.getOrganizedEvents().size();
+        if(organizer.getOrganizedEvents().stream().anyMatch(e -> e.getId().equals(eventId))){
             registration.setStatus("Declined");
             String message = "Sorry " + registration.getUser().getFirstName() + ", but your join request to " + registration.getEvent().getName() + " has been declined.";
             notificationService.createNotification(registration.getUser(), message, registration.getEvent());

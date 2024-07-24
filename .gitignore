@@ -3,9 +3,8 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
-
-/src/main/resources/static/venue-images/**
 /src/main/resources/static/event-images/**
+/src/main/resources/static/venue-images/**
 ### STS ###
 .apt_generated
 .classpath
