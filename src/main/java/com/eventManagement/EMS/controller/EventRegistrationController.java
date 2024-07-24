@@ -78,4 +78,14 @@ public class EventRegistrationController {
     public ResponseEntity<List<EventRegistrationDTO>> getAllAcceptedRequest(){
         return eventRegistrationService.getAllAcceptedRequest();
     }
+
+
+@DeleteMapping("/cancel/{registrationId}")// When participants want to cancel the registration
+public ResponseEntity<String> cancelRegistrationByUser(@PathVariable Long registrationId, @AuthenticationPrincipal UserInfoDetails userInfoDetails){
+    if(userInfoDetails == null){
+        return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+    }
+    User user = userInfoDetails.getUser();
+    return eventRegistrationService.cancelRegistrationByUser(registrationId, user);
+}
 }
