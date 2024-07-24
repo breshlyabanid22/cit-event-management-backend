@@ -183,6 +183,24 @@ public class UserService {
             return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
         }
     }
+    public ResponseEntity<String> updateUsername(Long userId, String updatedUsername){
+        Optional<User> findUser = userRepository.findById(userId);
+        if(findUser.isEmpty()){
+            return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+        }
+        //Checks if username is already taken
+        Optional<User> existingUserWithSameUsername = userRepository.findByUsername(updatedUsername);
+        if(existingUserWithSameUsername.isPresent()){
+            return new ResponseEntity<>("Username already taken.", HttpStatus.CONFLICT);
+        }
+        User existingUser = findUser.get();
+        existingUser.setUsername(updatedUsername);
+        userRepository.save(existingUser);
+        String message = "Your username has been updated!";
+        notificationService.regularNotification(existingUser, message);
+        return new ResponseEntity<>("Username has been saved", HttpStatus.OK);
+    }
+
     //Admin can update users' profile
     public ResponseEntity<String> updateUser(Long userId, UserDTO updatedUser) {
         Optional<User> userOptional = userRepository.findById(userId);

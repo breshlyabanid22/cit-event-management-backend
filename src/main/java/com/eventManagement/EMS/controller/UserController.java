@@ -15,6 +15,8 @@ import org.springframework.security.web.authentication.logout.SecurityContextLog
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Map;
+
 
 @RequestMapping("/users")
 @RestController
@@ -45,6 +47,11 @@ public class UserController {
     public ResponseEntity<String> updateMyProfile(MultipartFile multipartFile, @AuthenticationPrincipal UserDetails userDetails, @RequestBody User updatedUser) {
         Long userId = getUserIdFromUserDetails(userDetails);
         return userService.updateProfile(multipartFile, userId, updatedUser);
+    }
+    @PatchMapping("/{userId}/username")
+    public ResponseEntity<String> updateUsername(@PathVariable Long userId, @RequestBody Map<String, String> request){
+        String updatedUsername = request.get("updatedUsername");
+        return userService.updateUsername(userId, updatedUsername);
     }
 
     private Long getUserIdFromUserDetails(UserDetails userDetails) {
