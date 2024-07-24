@@ -235,4 +235,37 @@ public class EventRegistrationService {
         return new ResponseEntity<>(acceptedRegistrations, HttpStatus.OK);
     }
 
+
+public ResponseEntity<String> cancelRegistrationByUser(Long registrationId, User user){
+    Optional<EventRegistration> existingRegistration = eventRegistrationRepository.findById(registrationId);
+
+    if(existingRegistration.isPresent()){
+        EventRegistration eventRegistration = existingRegistration.get();
+        if(eventRegistration.getUser().getUserID().equals(user.getUserID())){
+            eventRegistrationRepository.delete(eventRegistration);
+            String message = "Your registration to " + eventRegistration.getEvent().getName() + " has been canceled";
+            notificationService.createNotification(user, message, eventRegistration.getEvent());
+            return new ResponseEntity<>("Registration has been canceled", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("User does not own this registration", HttpStatus.UNAUTHORIZED);
+        }
+    }
+    return new ResponseEntity<>("Registration not found", HttpStatus.NOT_FOUND);
+}
+
+public ResponseEntity<List<EventRegistrationDTO>> getAcceptedEventsForUser(User user) {
+    List<EventRegistration> registrations = eventRegistrationRepository.findByUserAndStatus(user, "Accepted");
+    List<EventRegistrationDTO> acceptedEvents = new ArrayList<>();
+    for (EventRegistration registration : registrations) {
+        Event event = registration.getEvent();
+        EventRegistrationDTO dto = new EventRegistrationDTO();
+        dto.setEventId(event.getId());
+        dto.setEventName(event.getName());
+        dto.setRegisteredAt(registration.getRegisteredAt());
+        acceptedEvents.add(dto);
+    }
+    return new ResponseEntity<>(acceptedEvents, HttpStatus.OK);
+}
+
+
 }

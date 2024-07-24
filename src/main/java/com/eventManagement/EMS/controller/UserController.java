@@ -71,6 +71,12 @@ public class UserController {
         return userService.getCurrentUser(userId);
     }
 
+    @GetMapping("/{username}/user")
+    public ResponseEntity<UserDTO> getCurrentUser(@PathVariable String username, @AuthenticationPrincipal UserInfoDetails userInfoDetails){
+        User user = userInfoDetails.getUser();
+        return userService.getUserByUsername(username);
+    }
+
     @DeleteMapping("/account/deactivate")
     public ResponseEntity<String> deactivateMyAccount(@AuthenticationPrincipal UserInfoDetails userInfoDetails){
         User user = userInfoDetails.getUser();
