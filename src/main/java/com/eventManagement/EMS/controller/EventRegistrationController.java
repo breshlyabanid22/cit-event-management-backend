@@ -88,4 +88,11 @@ public ResponseEntity<String> cancelRegistrationByUser(@PathVariable Long regist
     User user = userInfoDetails.getUser();
     return eventRegistrationService.cancelRegistrationByUser(registrationId, user);
 }
+
+@GetMapping("/acceptedEvents")
+public ResponseEntity<List<EventRegistrationDTO>> getAcceptedEventsForUser(@AuthenticationPrincipal UserInfoDetails userInfoDetails) {
+    User user = userInfoDetails.getUser();
+    return eventRegistrationService.getAcceptedEventsForUser(user);
+}
+
 }
