@@ -108,8 +108,12 @@ public class EventService {
         }
         eventRepository.save(event);
         //Send notifications to venue_managers
-        List<User> venueManagers = eventVenue.getVenueManagers().stream().toList();
         String message = "New event request by " + user.getUsername();
+        List<User> admins = userRepository.findByRole("ADMIN");
+        for(User admin: admins){
+            notificationService.createNotification(admin, message, event);
+        }
+        List<User> venueManagers = eventVenue.getVenueManagers().stream().toList();
         for(User manager: venueManagers){
             notificationService.createNotification(manager, message, event);
         }

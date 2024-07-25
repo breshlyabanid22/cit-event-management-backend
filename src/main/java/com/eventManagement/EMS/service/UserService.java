@@ -152,7 +152,9 @@ public class UserService {
             }
             existingUser.setFirstName(updatedUser.getFirstName());
             existingUser.setLastName(updatedUser.getLastName());
-            existingUser.setYear(updatedUser.getYear() != null ? updatedUser.getYear() : existingUser.getYear());
+            if(updatedUser.getYear() != null){
+                existingUser.setYear(updatedUser.getYear());
+            }
             if(imageFile != null && !imageFile.isEmpty()){
                 try {
                     Path uploadPath = Paths.get(uploadDir).toAbsolutePath().normalize();
