@@ -32,37 +32,50 @@ public class EventRegistrationService {
     NotificationService notificationService;
     @Autowired
     UserRepository userRepository;
-    public ResponseEntity<String> registerToEvent(Long eventId, Long userId){
+    public ResponseEntity<String> registerToEvent(Long eventId, Long userId) {
         Optional<Event> eventOpt = eventRepository.findById(eventId);
-
-        if(eventOpt.isEmpty()){
+        if (eventOpt.isEmpty()) {
             return new ResponseEntity<>("Event not found", HttpStatus.NOT_FOUND);
         }
 
         Optional<User> userOpt = userRepository.findById(userId);
-        if(userOpt.isEmpty()){
+        if (userOpt.isEmpty()) {
             return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
         }
+
         Event event = eventOpt.get();
         User user = userOpt.get();
 
-        //Check if user is already registered
-        Optional<EventRegistration> existingRegistration = eventRegistrationRepository.findByEventAndUser(event, user);
-        if(existingRegistration.isPresent()){
-            return new ResponseEntity<>("You are already registered for this event", HttpStatus.CONFLICT);
+        // Check if user is already registered
+        Optional<EventRegistration> existingRegistrationOpt = eventRegistrationRepository.findByEventAndUser(event, user);
 
+        if (existingRegistrationOpt.isPresent()) {
+            EventRegistration existingRegistration = existingRegistrationOpt.get();
+
+            // If the registration is not declined, user is already registered
+            if (!existingRegistration.getStatus().equals("Declined")) {
+                return new ResponseEntity<>("You are already registered for this event", HttpStatus.CONFLICT);
+            }
+
+            // Update the existing registration status if it was declined
+            existingRegistration.setStatus("Pending");
+            existingRegistration.setRegisteredAt(LocalDateTime.now().format(DateTimeFormatter.ofPattern("E, MMM dd yyyy")));
+            eventRegistrationRepository.save(existingRegistration);
+        } else {
+            // Create a new registration if none exists
+            EventRegistration registration = new EventRegistration();
+            registration.setEvent(event);
+            registration.setUser(user);
+            registration.setStatus("Pending");
+            registration.setRegisteredAt(LocalDateTime.now().format(DateTimeFormatter.ofPattern("E, MMM dd yyyy")));
+            eventRegistrationRepository.save(registration);
         }
-        EventRegistration registration = new EventRegistration();
-        registration.setEvent(event);
-        registration.setUser(user);
-        registration.setStatus("Pending");
-        registration.setRegisteredAt(LocalDateTime.now().format(DateTimeFormatter.ofPattern("E, MMM dd yyyy")));
 
         String message = "Pending join request for " + event.getName();
         notificationService.createNotification(user, message, event);
-        eventRegistrationRepository.save(registration);
         return new ResponseEntity<>("Registered Successfully. Please wait for approval.", HttpStatus.OK);
     }
+
 
     public ResponseEntity<EventRegistrationDTO> getEventRegistrationByEventAndUser(Long eventId, Long userId) {
     Optional<Event> optionalEvent = eventRepository.findById(eventId);

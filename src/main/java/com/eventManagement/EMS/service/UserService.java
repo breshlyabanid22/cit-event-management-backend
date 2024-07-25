@@ -149,6 +149,7 @@ public class UserService {
                 existingUser.setCourse("N/A");
                 existingUser.setDepartment(updatedUser.getDepartment());
             }else{
+                existingUser.setDepartment(updatedUser.getDepartment());
                 existingUser.setCourse(updatedUser.getCourse());
             }
             existingUser.setYear(updatedUser.getYear() != null ? updatedUser.getYear() : existingUser.getYear());
@@ -250,6 +251,7 @@ public class UserService {
                     return new ResponseEntity<>("School ID already exist", HttpStatus.CONFLICT);
                 }
             }
+            existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
             existingUser.setEmail(updatedUser.getEmail() != null ? updatedUser.getEmail() : existingUser.getEmail());
             existingUser.setSchoolID(updatedUser.getSchoolID() != null  ? updatedUser.getSchoolID() : existingUser.getSchoolID());
             existingUser.setFirstName(updatedUser.getFirstName() != null ? updatedUser.getFirstName() : existingUser.getFirstName());
