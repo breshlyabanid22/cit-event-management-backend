@@ -356,9 +356,7 @@ public class EventService {
                 List<EventRegistration> registrations = eventRegistrationRepository.findByEventId(eventId);
                 List<User> registeredUsers = registrations.stream().map(EventRegistration::getUser).toList();
                 String message = "Sorry, the event " + event.getName() + " has been canceled";
-                if(user.getRole().equals("ORGANIZER")){
-                event.getOrganizer().setRole("PARTICIPANT");
-                }
+
                 notificationService.sendNotificationToUser(registeredUsers, message, event);
                 event.setStatus("Canceled");
                 eventRepository.save(event);
