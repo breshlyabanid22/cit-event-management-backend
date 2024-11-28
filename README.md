@@ -8,8 +8,12 @@ a comprehensive and user-friendly platform specifically designed for CIT Univers
 1. Download file or perform 'git clone'
 2. Open project in Intellij or VS Code
 4. Go to src > main > resource > application.properties
-    - Edit this:
-    - spring.datasource.url=jdbc:mysql://localhost:3306/cit-ems-db
-    - spring.datasource.username=bayabas
-    - spring.datasource.password=userbayabas
-6. Run the project: Open a terminal > type 'mvn spring-boot
+    - You can Edit this:
+        - spring.datasource.url=jdbc:mysql://localhost:3306/cit-ems-db
+        - spring.datasource.username=bayabas
+        - spring.datasource.password=userbayabas
+    - Or name your database "cit-ems-db" with the respective username and password
+5. Create the database
+6. Manually insert a data in the database, add a "admin" user with an "Admin" role  
+8. Go to your IDE and run the project: Open a terminal > type 'mvn spring-boot or you can click the run button in your IDE.
+9. Now go to your frontend
