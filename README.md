@@ -6,7 +6,7 @@ a comprehensive and user-friendly platform specifically designed for CIT Univers
 
 ## Set up
 1. Download file or perform 'git clone'
-2. Open project in Intellij or VS Code
+2. Open project in Intellij or VS Code (If you're using VS Code, install plugins for springboot)
 4. Go to src > main > resource > application.properties
     - You can Edit this:
         - spring.datasource.url=jdbc:mysql://localhost:3306/cit-ems-db
