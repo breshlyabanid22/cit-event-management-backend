@@ -15,5 +15,5 @@ a comprehensive and user-friendly platform specifically designed for CIT Univers
     - Or name your database "cit-ems-db" with the respective username and password
 5. Create the database
 6. Manually insert a data in the database, add a "admin" user with an "Admin" role  
-8. Go to your IDE and run the project: Open a terminal > type 'mvn spring-boot or you can click the run button in your IDE.
+8. Go to your IDE and run the project: Open a terminal > type 'mvn spring-boot:run' or you can click the run button in your IDE.
 9. Now go to your frontend
